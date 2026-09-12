@@ -1,20 +1,14 @@
 import "./Workspace.css"
 
-import BottomBar from "../BottomBar/BottomBar"
-import  RightPanel  from "../RightPanel/RightPanel"
+import BottomBar from "../../components/layout/BottomBar/BottomBar"
+import  RightPanel  from "../../components/layout/RightPanel/RightPanel"
 
-type WorkspaceAction =
-    | "selection"
-    | "agent"
-    | "api"
-    | "fabrics"
-    
+
 type WorkspaceProps = {
-    action:WorkspaceAction
 }
 function Workspace({
-    action
-}: WorkspaceProps) {
+    
+} ) {
 
     return <>
         <div id="WorkspaceArea">
@@ -22,7 +16,6 @@ function Workspace({
            <div id="Workspace">
                 <div id="WorkspaceInArea">
                      <div id="WorkspaceInAreaIn">
-                    Current action: {action}
                 </div>
                 </div>
             

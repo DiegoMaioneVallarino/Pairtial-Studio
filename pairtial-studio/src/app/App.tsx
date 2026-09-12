@@ -1,8 +1,8 @@
 import "./App.css"
 
-import  TopBar  from "./components/TopBar/TopBar"
-import  LeftBar  from "./components/LeftBar/LeftBar"
-import  Workspace  from "./components/Workspace/Workspace"
+import  TopBar  from "../components/layout/TopBar/TopBar"
+import  LeftBar  from "../components/layout/LeftBar/LeftBar"
+import  Workspace  from "../features/workspace/Workspace"
 
 function App() {
 
@@ -18,7 +18,7 @@ function App() {
 
                 <LeftBar selectedButton={'selection'}/>
 
-                <Workspace action={'selection'} />
+                <Workspace  />
 
                 
 
