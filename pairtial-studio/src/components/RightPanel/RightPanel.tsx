@@ -18,7 +18,7 @@ export default function RightPanel({
 
     return (
         <aside className="right-panel">
-
+            <aside className="right-panelIn">
             {selectedPanel === "properties" && (
                 <PropertiesPanel />
             )}
@@ -30,7 +30,7 @@ export default function RightPanel({
             {selectedPanel === "models" && (
                 <ModelsPanel />
             )}
-
+            </aside>
         </aside>
     )
 }

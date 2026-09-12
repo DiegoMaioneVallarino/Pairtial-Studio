@@ -14,7 +14,9 @@ function LeftBar({
 
     return (
         <div id="LeftBar">
+            <div className="LeftBarInner">
 
+            
             <div
                 className={`tools-bt ${selectedButton === "selection" ? "select" : ""}`}
                 id="tool-selection"
@@ -34,7 +36,7 @@ function LeftBar({
                 className={`tools-bt ${selectedButton === "fabrics" ? "select" : ""}`}
                 id="tool-fabrics"
             />
-
+            </div>
         </div>
     )
 

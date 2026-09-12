@@ -3,7 +3,6 @@ body{
 }
 
 div#root {
-    background: #00c7ff;
     width: 100%;
     height: 100%;
     position: absolute;
@@ -14,37 +13,21 @@ div#root {
     height: 100%;
     grid-template-rows: 10% auto ;
     display: grid;
+    background: linear-gradient(0deg, #e4e4e4, #f0f0f0);
 }
 
 div#root {
-    background: #00c7ff;
     width: 100%;
     height: 100%;
     position: absolute;
 }
 
 header.top-bar {
-    background: red;
 }
 .app-body {
-    grid-template-columns: 100px auto 250px;
-    display: grid;
-}
-div#LeftBar {
-    width: 100px;
-    background: green;
-    height: 100%;
-    float: left;
-}
-
-div#Workspace {
-    background: yellow;
-    width: 100%;
-    height: 100%;
-    grid-template-rows: auto 25%;
+    grid-template-columns: 100px auto;
     display: grid;
 }
 
-div#BottomBar {
-    background: white;
-}
+
+

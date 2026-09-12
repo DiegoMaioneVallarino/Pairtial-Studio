@@ -1,0 +1,13 @@
+aside.right-panelIn {
+    position: absolute;
+    top: 10px;
+    left: 0px;
+    right: 10px;
+    bottom: 10px;
+    background: #e2e2e2;
+    border-radius: 20px;
+}
+
+aside.right-panel {
+    position: relative;
+}

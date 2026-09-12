@@ -3,7 +3,6 @@ import "./App.css"
 import  TopBar  from "./components/TopBar/TopBar"
 import  LeftBar  from "./components/LeftBar/LeftBar"
 import  Workspace  from "./components/Workspace/Workspace"
-import  RightPanel  from "./components/RightPanel/RightPanel"
 
 function App() {
 
@@ -21,7 +20,7 @@ function App() {
 
                 <Workspace action={'selection'} />
 
-                <RightPanel selectedPanel={'fabrics'}/>
+                
 
                 
             </div>

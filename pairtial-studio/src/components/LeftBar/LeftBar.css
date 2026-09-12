@@ -1,0 +1,26 @@
+.LeftBarInner {
+    background: linear-gradient(360deg, #e4e4e4, #ffffff);
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    border-radius: 20px;
+    grid-template-rows: 10% 10% 10% 10% 10% 10% 10% 10% 10% 10%;
+    display: grid;
+}
+div#LeftBar {
+    width: 100px;
+    height: 100%;
+    float: left;
+    position: relative;
+}
+
+.tools-bt {
+    background: wheat;
+    width: 60px;
+    height: 60px;
+    background: black;
+    margin: auto;
+    border-radius: 14px;
+}

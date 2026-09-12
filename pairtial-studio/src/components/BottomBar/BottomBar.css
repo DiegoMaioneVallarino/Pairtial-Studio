@@ -1,0 +1,41 @@
+div#BottomBarInner {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    right: 10px;
+    bottom: 10px;
+    grid-template-columns: 70% 30%;
+    display: grid;
+}
+
+div#BottomBar {
+    position: relative;
+}
+
+div#BottomPanelLeft {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    right: 10px;
+    bottom: 0px;
+    background: #e2e2e2;
+    border-radius: 20px;
+}
+
+div#BottomPanelLeftArea {
+    position: relative;
+}
+
+div#BottomPanelRight {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    background: #e2e2e2;
+    border-radius: 20px;
+}
+
+div#BottomPanelRightArea {
+    position: relative;
+}
