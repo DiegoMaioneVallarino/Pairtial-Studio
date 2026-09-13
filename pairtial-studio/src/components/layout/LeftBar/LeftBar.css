@@ -6,21 +6,19 @@
     right: 10px;
     bottom: 10px;
     border-radius: 20px;
-    grid-template-rows: 10% 10% 10% 10% 10% 10% 10% 10% 10% 10%;
-    display: grid;
 }
 div#LeftBar {
-    width: 100px;
+    width: 90px;
     height: 100%;
     float: left;
     position: relative;
 }
 
 .tools-bt {
-    background: wheat;
-    width: 60px;
-    height: 60px;
+    width: 45px;
+    height: 45px;
     background: black;
     margin: auto;
     border-radius: 14px;
+    margin-top: 10px;
 }

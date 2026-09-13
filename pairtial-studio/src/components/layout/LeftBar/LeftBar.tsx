@@ -36,6 +36,35 @@ function LeftBar({
                 className={`tools-bt ${selectedButton === "fabrics" ? "select" : ""}`}
                 id="tool-fabrics"
             />
+             <div
+                className={`tools-bt ${selectedButton === "fabrics" ? "select" : ""}`}
+                id="tool-fabrics"
+            />
+             <div
+                className={`tools-bt ${selectedButton === "fabrics" ? "select" : ""}`}
+                id="tool-fabrics"
+            />
+             <div
+                className={`tools-bt ${selectedButton === "fabrics" ? "select" : ""}`}
+                id="tool-fabrics"
+            />
+             <div
+                className={`tools-bt ${selectedButton === "fabrics" ? "select" : ""}`}
+                id="tool-fabrics"
+            />
+             <div
+                className={`tools-bt ${selectedButton === "fabrics" ? "select" : ""}`}
+                id="tool-fabrics"
+            />
+             <div
+                className={`tools-bt ${selectedButton === "fabrics" ? "select" : ""}`}
+                id="tool-fabrics"
+            />
+             <div
+                className={`tools-bt ${selectedButton === "fabrics" ? "select" : ""}`}
+                id="tool-fabrics"
+            />
+            
             </div>
         </div>
     )

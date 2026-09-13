@@ -1,41 +1,990 @@
-div#BottomBarInner {
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    right: 10px;
-    bottom: 10px;
-    grid-template-columns: 70% 30%;
-    display: grid;
-}
-
 div#BottomBar {
     position: relative;
 }
 
-div#BottomPanelLeft {
+
+div#BottomBarInner {
     position: absolute;
-    top: 0px;
-    left: 0px;
+
+    top: 0;
+    left: 0;
     right: 10px;
-    bottom: 0px;
-    background: #e2e2e2;
-    border-radius: 20px;
+    bottom: 10px;
+
+    display: grid;
+
+    grid-template-columns:
+        70%
+        30%;
+
+    gap: 10px;
 }
 
-div#BottomPanelLeftArea {
-    position: relative;
-}
 
-div#BottomPanelRight {
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    right: 0px;
-    bottom: 0px;
-    background: #e2e2e2;
-    border-radius: 20px;
-}
-
+div#BottomPanelLeftArea,
 div#BottomPanelRightArea {
     position: relative;
+
+    min-width: 0;
+    min-height: 0;
+}
+
+
+/* =========================================================
+   CONTENEDORES
+========================================================= */
+
+div#BottomPanelLeft,
+div#BottomPanelRight {
+    position: absolute;
+
+    inset: 0;
+
+    border-radius: 20px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255, 255, 255, 0.96),
+            rgba(224, 229, 238, 0.76)
+        );
+
+    box-shadow:
+        0 8px 28px rgba(31, 42, 61, 0.06),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.85);
+}
+
+
+div#BottomPanelLeftIn,
+div#BottomPanelRightIn {
+    position: absolute;
+
+    inset: 1px;
+
+    overflow: hidden;
+
+    border-radius: 19px;
+
+    background:
+        rgba(248, 249, 252, 0.94);
+
+    backdrop-filter:
+        blur(20px);
+}
+
+
+/* =========================================================
+   PANEL IZQUIERDO
+========================================================= */
+
+div#BottomPanelLeftIn {
+    display: grid;
+
+    grid-template-rows:
+        52px
+        minmax(0, 1fr);
+}
+
+
+/* =========================================================
+   TABS
+========================================================= */
+
+.bottom-tabs {
+    display: flex;
+
+    align-items: stretch;
+
+    gap: 2px;
+
+    padding: 4px 10px 0 10px;
+
+    border-bottom:
+        1px solid rgba(120, 132, 151, 0.08);
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(246, 248, 252, 0.96),
+            rgba(235, 238, 244, 0.88)
+        );
+}
+
+
+.bottom-tab {
+    position: relative;
+
+    height: 48px;
+
+    padding: 0 16px;
+
+    border: none;
+
+    background: transparent;
+
+    color: #68758d;
+
+    font-size: 13px;
+
+    cursor: pointer;
+
+    border-radius:
+        14px
+        14px
+        0
+        0;
+
+    transition:
+        background 0.16s ease,
+        color 0.16s ease,
+        box-shadow 0.16s ease;
+}
+
+
+.bottom-tab:hover {
+    color: #384152;
+
+    background:
+        rgba(255, 255, 255, 0.35);
+}
+
+
+.bottom-tab.selected {
+    color: #111827;
+
+    font-weight: 600;
+
+    background:
+        rgba(255, 255, 255, 0.92);
+
+    box-shadow:
+        0 5px 15px rgba(38, 48, 65, 0.05);
+}
+
+
+.bottom-tab.selected::after {
+    content: "";
+
+    position: absolute;
+
+    left: 14px;
+    right: 14px;
+    bottom: -1px;
+
+    height: 2px;
+
+    border-radius: 999px;
+
+    background: #232b39;
+}
+
+
+/* =========================================================
+   CONTENIDO
+========================================================= */
+
+.bottom-content {
+    min-height: 0;
+
+    overflow: auto;
+
+    padding: 10px 12px 12px 12px;
+}
+
+
+/* =========================================================
+   EXECUTION TIMELINE
+========================================================= */
+
+.execution-view {
+    display: flex;
+
+    flex-direction: column;
+}
+
+
+.execution-row {
+    display: grid;
+
+    grid-template-columns:
+        78px
+        28px
+        110px
+        minmax(0, 1fr);
+
+    align-items: center;
+
+    min-height: 38px;
+
+    border-radius: 10px;
+
+    transition:
+        background 0.15s ease;
+}
+
+
+.execution-row:hover {
+    background:
+        rgba(222, 229, 240, 0.48);
+}
+
+
+.execution-time {
+    padding-left: 8px;
+
+    color: #76849b;
+
+    font-size: 12px;
+}
+
+
+.execution-line {
+    position: relative;
+
+    height: 100%;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+}
+
+
+.execution-line::before {
+    content: "";
+
+    position: absolute;
+
+    top: -50%;
+    bottom: -50%;
+
+    width: 1px;
+
+    background:
+        #cbd6e7;
+}
+
+
+.execution-row:first-child
+.execution-line::before {
+    top: 50%;
+}
+
+
+.execution-row:last-child
+.execution-line::before {
+    bottom: 50%;
+}
+
+
+.execution-dot {
+    position: relative;
+
+    z-index: 2;
+
+    width: 12px;
+    height: 12px;
+
+    border-radius: 50%;
+
+    box-shadow:
+        0 2px 5px rgba(36, 48, 66, 0.12);
+}
+
+
+/* colores de cada tipo */
+
+.execution-dot.input {
+    background: #4aa3ff;
+}
+
+
+.execution-dot.api {
+    background: #ffbd3d;
+}
+
+
+.execution-dot.fabric {
+    background: #9468ff;
+}
+
+
+.execution-dot.quality {
+    background: #ff5f63;
+}
+
+
+.execution-dot.output {
+    background: #31c987;
+}
+
+
+.execution-name {
+    color: #161d2a;
+
+    font-size: 12px;
+
+    font-weight: 600;
+}
+
+
+.execution-message {
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+    color: #64728a;
+
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   PANEL DERECHO
+========================================================= */
+
+div#BottomPanelRightIn {
+    padding: 16px;
+}
+
+
+.bottom-details-title {
+    padding-bottom: 12px;
+
+    margin-bottom: 12px;
+
+    border-bottom:
+        1px solid rgba(112, 126, 147, 0.1);
+
+    color: #161d2a;
+
+    font-size: 14px;
+
+    font-weight: 600;
+}
+
+
+.bottom-details-body {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+}
+
+
+.bottom-details-row {
+    display: flex;
+
+    justify-content: space-between;
+
+    gap: 12px;
+
+    color: #748096;
+
+    font-size: 12px;
+}
+
+
+.bottom-details-row strong {
+    color: #2b3546;
+
+    font-weight: 600;
+}
+
+
+.bottom-details-row
+.status-success {
+    color: #18a96d;
+}
+
+
+/* =========================================================
+   PLACEHOLDERS
+========================================================= */
+
+.bottom-placeholder {
+    height: 100%;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    color: #8791a4;
+
+    font-size: 13px;
+}/* =========================================================
+   FABRIC DETAIL
+========================================================= */
+
+div#BottomPanelRightIn {
+    position: absolute;
+
+    inset: 1px;
+
+    display: grid;
+
+    grid-template-rows:
+        44px
+        38px
+        minmax(0, 1fr)
+        48px;
+
+    overflow: hidden;
+
+    border-radius: 19px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255, 255, 255, 0.97),
+            rgba(244, 247, 251, 0.94)
+        );
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.fabric-detail-header {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    padding:
+        0
+        12px;
+
+    border-bottom:
+        1px solid rgba(120, 132, 151, 0.07);
+}
+
+
+.fabric-detail-title {
+    min-width: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    color: #121926;
+
+    font-size: 12px;
+}
+
+
+.fabric-detail-title strong {
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+    font-weight: 650;
+}
+
+
+.fabric-detail-icon {
+    flex-shrink: 0;
+
+    width: 24px;
+    height: 24px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    color: white;
+
+    font-size: 12px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #6996ff,
+            #7064db
+        );
+
+    box-shadow:
+        0 3px 8px rgba(81, 100, 181, 0.22),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+
+.fabric-detail-status {
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+}
+
+
+.fabric-status-badge {
+    padding:
+        5px
+        10px;
+
+    border-radius: 999px;
+
+    background:
+        #dcf9ec;
+
+    color:
+        #079a60;
+
+    font-size: 10px;
+
+    font-weight: 600;
+}
+
+
+.fabric-time-badge {
+    padding:
+        5px
+        10px;
+
+    border-radius: 999px;
+
+    background:
+        rgba(240, 243, 248, 0.9);
+
+    color:
+        #657187;
+
+    font-size: 10px;
+
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   TABS
+========================================================= */
+
+.fabric-detail-tabs {
+    display: flex;
+
+    align-items: end;
+
+    padding:
+        0
+        10px;
+
+    border-bottom:
+        1px solid rgba(118, 132, 153, 0.09);
+}
+
+
+.fabric-detail-tab {
+    position: relative;
+
+    height: 38px;
+
+    padding:
+        0
+        12px;
+
+    border: none;
+
+    background: transparent;
+
+    color:
+        #6d788e;
+
+    font-size:
+        10px;
+
+    cursor: pointer;
+}
+
+
+.fabric-detail-tab:hover {
+    color:
+        #2f3848;
+}
+
+
+.fabric-detail-tab.selected {
+    color:
+        #161d2a;
+
+    font-weight:
+        600;
+
+    background:
+        rgba(255, 255, 255, 0.74);
+
+    border-radius:
+        10px
+        10px
+        0
+        0;
+}
+
+
+.fabric-detail-tab.selected::after {
+    content: "";
+
+    position: absolute;
+
+    left: 8px;
+    right: 8px;
+    bottom: -1px;
+
+    height: 2px;
+
+    border-radius: 999px;
+
+    background:
+        #253041;
+}
+
+
+/* =========================================================
+   CONTENT
+========================================================= */
+
+.fabric-detail-content {
+    min-height: 0;
+
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1fr)
+        110px;
+
+    gap:
+        12px;
+
+    padding:
+        10px
+        12px;
+
+    overflow: hidden;
+}
+
+
+.fabric-detail-data {
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    gap: 8px;
+}
+
+
+.fabric-detail-row {
+    display: grid;
+
+    grid-template-columns:
+        118px
+        minmax(0, 1fr);
+
+    align-items: center;
+
+    font-size: 10px;
+}
+
+
+.fabric-detail-row span {
+    color:
+        #6f7c92;
+}
+
+
+.fabric-detail-row strong {
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+    color:
+        #253044;
+
+    font-weight:
+        500;
+}
+
+
+/* =========================================================
+   PREVIEW
+========================================================= */
+
+.fabric-detail-preview {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 12px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(245, 248, 252, 0.95),
+            rgba(228, 234, 243, 0.72)
+        );
+
+    box-shadow:
+        inset 0 0 0 1px rgba(132, 147, 169, 0.08);
+}
+
+
+.fabric-preview-elevator {
+    position: relative;
+
+    width: 62px;
+    height: 88px;
+
+    padding:
+        14px
+        7px
+        7px;
+
+    border-radius:
+        14px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #dbe4ef
+        );
+
+    box-shadow:
+        0 7px 18px rgba(57, 73, 96, 0.14),
+        inset 0 1px 0 rgba(255, 255, 255, 0.85);
+}
+
+
+.fabric-preview-top {
+    position: absolute;
+
+    top: 5px;
+    left: 50%;
+
+    transform:
+        translateX(-50%);
+
+    min-width:
+        26px;
+
+    padding:
+        2px
+        4px;
+
+    border-radius:
+        4px;
+
+    background:
+        #354156;
+
+    color:
+        #ffd74d;
+
+    font-size:
+        7px;
+
+    text-align:
+        center;
+}
+
+
+.fabric-preview-door {
+    position: relative;
+
+    height: 100%;
+
+    overflow: hidden;
+
+    border-radius:
+        8px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #8bc5ff,
+            #dff3ff
+        );
+
+    box-shadow:
+        inset 0 0 0 2px rgba(79, 119, 165, 0.2);
+}
+
+
+/* =========================================================
+   MINI AGENTS
+========================================================= */
+
+.fabric-preview-agent {
+    position: absolute;
+
+    bottom:
+        10px;
+
+    width:
+        16px;
+    height:
+        20px;
+
+    border-radius:
+        5px
+        5px
+        4px
+        4px;
+
+    box-shadow:
+        0 3px 6px rgba(45, 60, 82, 0.14);
+}
+
+
+.fabric-preview-agent::before {
+    content: "";
+
+    position: absolute;
+
+    top:
+        -8px;
+    left:
+        3px;
+
+    width:
+        10px;
+    height:
+        10px;
+
+    border-radius:
+        4px;
+}
+
+
+.fabric-preview-agent.blue {
+    left:
+        22px;
+
+    background:
+        #42a8ff;
+}
+
+
+.fabric-preview-agent.blue::before {
+    background:
+        #4bb3ff;
+}
+
+
+.fabric-preview-agent.purple {
+    left:
+        8px;
+
+    bottom:
+        7px;
+
+    background:
+        #9e67ed;
+}
+
+
+.fabric-preview-agent.purple::before {
+    background:
+        #ac76f3;
+}
+
+
+.fabric-preview-agent.green {
+    right:
+        7px;
+
+    bottom:
+        6px;
+
+    background:
+        #51d698;
+}
+
+
+.fabric-preview-agent.green::before {
+    background:
+        #62dfa5;
+}
+
+
+/* =========================================================
+   OPEN BUTTON
+========================================================= */
+
+.fabric-detail-open {
+    margin:
+        5px
+        10px
+        10px;
+
+    border:
+        1px solid rgba(116, 130, 150, 0.08);
+
+    border-radius:
+        10px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #f1f4f8,
+            #e7ebf1
+        );
+
+    color:
+        #141b28;
+
+    font-size:
+        10px;
+
+    font-weight:
+        600;
+
+    cursor:
+        pointer;
+
+    transition:
+        transform 0.14s ease,
+        background 0.14s ease,
+        box-shadow 0.14s ease;
+}
+
+
+.fabric-detail-open span {
+    margin-left:
+        6px;
+
+    font-size:
+        14px;
+}
+
+
+.fabric-detail-open:hover {
+    transform:
+        translateY(-1px);
+
+    background:
+        linear-gradient(
+            180deg,
+            #f7f9fc,
+            #ebeff5
+        );
+
+    box-shadow:
+        0 4px 12px rgba(37, 48, 65, 0.06);
 }

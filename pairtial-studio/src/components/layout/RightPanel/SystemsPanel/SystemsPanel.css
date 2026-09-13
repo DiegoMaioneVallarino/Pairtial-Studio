@@ -1,0 +1,259 @@
+.systems-panel {
+    height: 100%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+}
+
+
+.systems-panel-toolbar {
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1fr)
+        auto;
+
+    gap: 8px;
+}
+
+
+/* =========================================================
+   BUSCADOR
+========================================================= */
+
+.systems-search {
+    height: 36px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    padding: 0 12px;
+
+    border-radius: 12px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #f1f3f7,
+            #edf0f5
+        );
+
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+
+.systems-search-icon {
+    color: #73809a;
+
+    font-size: 18px;
+}
+
+
+.systems-search input {
+    width: 100%;
+
+    border: none;
+
+    outline: none;
+
+    background: transparent;
+
+    font-size: 13px;
+
+    color: #374151;
+}
+
+
+.systems-search input::placeholder {
+    color: #8792a8;
+}
+
+
+/* =========================================================
+   NUEVO
+========================================================= */
+
+.systems-new-btn {
+    height: 36px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 6px;
+
+    padding: 0 14px;
+
+    border:
+        1px solid rgba(132, 145, 166, 0.14);
+
+    border-radius: 12px;
+
+    background:
+        rgba(255, 255, 255, 0.92);
+
+    color: #111827;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 3px 10px rgba(34, 45, 64, 0.05);
+
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+
+.systems-new-btn:hover {
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 5px 14px rgba(34, 45, 64, 0.09);
+}
+
+
+/* =========================================================
+   LISTA
+========================================================= */
+
+.systems-list {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 2px;
+
+    overflow-y: auto;
+
+    padding-right: 1px;
+}
+
+
+.system-item {
+    width: 100%;
+
+    min-height: 56px;
+
+    display: grid;
+
+    grid-template-columns:
+        38px
+        minmax(0, 1fr)
+        20px;
+
+    align-items: center;
+
+    gap: 9px;
+
+    padding: 7px 9px;
+
+    border: none;
+
+    border-radius: 12px;
+
+    background: transparent;
+
+    text-align: left;
+
+    cursor: pointer;
+
+    transition:
+        background 0.16s ease,
+        transform 0.16s ease;
+}
+
+
+.system-item:hover {
+    background:
+        rgba(220, 230, 242, 0.55);
+}
+
+
+.system-item.selected {
+    background:
+        linear-gradient(
+            90deg,
+            rgba(214, 237, 255, 0.92),
+            rgba(225, 240, 255, 0.75)
+        );
+}
+
+
+.system-icon {
+    width: 36px;
+    height: 36px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    font-size: 18px;
+
+    box-shadow:
+        0 4px 12px rgba(53, 67, 88, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.45);
+}
+
+
+.system-info {
+    min-width: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 2px;
+}
+
+
+.system-name {
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+    color: #111827;
+
+    font-size: 13px;
+
+    font-weight: 600;
+}
+
+
+.system-modified {
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+    color: #78849a;
+
+    font-size: 11px;
+}
+
+
+.system-options {
+    display: flex;
+
+    justify-content: center;
+
+    color: #65748b;
+
+    font-size: 18px;
+}
