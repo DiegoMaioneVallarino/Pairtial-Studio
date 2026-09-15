@@ -11,13 +11,16 @@ export type NodeKind =
     | "supervisor"
     | "hr"
 
-    export type Position = {
+
+export type Position = {
     x: number
     y: number
 }
 
+
 export type PairtialNode = {
     id: string
+
     kind: NodeKind
 
     name: string
@@ -27,15 +30,14 @@ export type PairtialNode = {
     config: Record<string, unknown>
 }
 
+
 export type PairtialEdge = {
     id: string
 
     sourceNodeId: string
     targetNodeId: string
-
-    sourcePortId?: string
-    targetPortId?: string
 }
+
 
 export type PairtialSystem = {
     id: string
@@ -43,7 +45,6 @@ export type PairtialSystem = {
     name: string
 
     nodes: PairtialNode[]
-
     edges: PairtialEdge[]
 }
 

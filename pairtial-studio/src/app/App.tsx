@@ -1,12 +1,29 @@
 import "./App.css"
 
-import  TopBar  from "../components/layout/TopBar/TopBar"
-import  LeftBar  from "../components/layout/LeftBar/LeftBar"
-import  Workspace  from "../features/workspace/Workspace"
+import {
+    useState
+} from "react"
+
+import TopBar from "../components/layout/TopBar/TopBar"
+
+import Workspace from "../features/workspace/Workspace"
+
+import LeftBar, {
+    type LeftBarButtonsTypes
+} from "../components/layout/LeftBar/LeftBar"
+
 
 function App() {
 
-    return (<>
+   const [
+    selectedButton,
+    setSelectedButton
+] = useState<LeftBarButtonsTypes | null>(
+    null
+)
+
+
+    return (
         <div className="app">
 
             <TopBar
@@ -14,22 +31,24 @@ function App() {
                 isRunning={false}
             />
 
+
             <div className="app-body">
 
-                <LeftBar selectedButton={'selection'}/>
+                <LeftBar
+                    selectedButton={selectedButton}
+                    onSelectButton={setSelectedButton}
+                />
 
-                <Workspace  />
 
-                
+                <Workspace
+                    selectedButton={selectedButton}
+                />
 
-                
             </div>
 
-            
-
-        </div></>
+        </div>
     )
-
 }
+
 
 export default App

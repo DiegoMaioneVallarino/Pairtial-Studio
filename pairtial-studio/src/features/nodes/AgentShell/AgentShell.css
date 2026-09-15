@@ -1,0 +1,601 @@
+/* =========================================================
+   AGENT SHELL
+========================================================= */
+
+.agent-shell {
+
+    --agent-dark:
+        #e9a000;
+
+    --agent-main:
+        #ffc019;
+
+    --agent-mid:
+        #ffba00;
+
+    --agent-light:
+        #ffe584;
+
+
+    position:
+        relative;
+
+    width:
+        126px;
+
+    height:
+        160px;
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    align-items:
+        center;
+
+    user-select:
+        none;
+}
+
+
+/* =========================================================
+   ROBOT
+========================================================= */
+
+.agent-robot {
+
+    position:
+        relative;
+
+    z-index:
+        2;
+
+    width:
+        92px;
+
+    height:
+        106px;
+
+}
+
+/* =========================================================
+   HEAD BACK
+========================================================= */
+
+.agent-head-back {
+    position: absolute;
+
+    z-index: 4;
+
+    top: 1px;
+    left: 50%;
+
+    width: 48px;
+    height: 48px;
+
+    transform: translateX(-50%);
+
+    border-radius: 14px;
+
+    background:
+        linear-gradient(
+            360deg,
+            var(--agent-dark),
+            var(--agent-mid),
+            var(--agent-main)
+        );
+
+    box-shadow:
+        0 4px 9px
+        rgba(33, 42, 60, 0.10);
+}
+
+
+/* =========================================================
+   HEAD FRONT
+========================================================= */
+
+.agent-head-front {
+    position: absolute;
+
+    z-index: 5;
+
+    top: 9px;
+    left: 50%;
+
+    width: 48px;
+    height: 41px;
+
+    transform: translateX(-50%);
+
+    box-sizing: border-box;
+
+    border-radius: 14px;
+
+    background:
+        linear-gradient(
+            145deg,
+            var(--agent-light),
+            var(--agent-main)
+        );
+
+    box-shadow:
+        inset 0 2px 7px
+        rgb(255 255 255 / 45%),
+
+        inset 0 1px 0
+        rgb(255 255 255 / 70%);
+}
+
+
+/* =========================================================
+   BODY BACK
+========================================================= */
+
+.agent-body-back {
+    position: absolute;
+
+    z-index: 3;
+
+    top: 46px;
+    left: 50%;
+
+    width: 76px;
+    height: 57px;
+
+    transform: translateX(-50%);
+
+    border-radius: 17px;
+
+    background:
+        linear-gradient(
+            360deg,
+            var(--agent-dark),
+            var(--agent-mid),
+            var(--agent-main)
+        );
+
+    box-shadow:
+        0 6px 12px
+        rgba(35, 44, 62, 0.12);
+}
+
+
+/* =========================================================
+   BODY FRONT
+========================================================= */
+
+.agent-body-front {
+    position: absolute;
+
+    z-index: 4;
+
+    top: 54px;
+    left: 50%;
+
+    width: 76px;
+    height: 66px;
+
+    transform: translateX(-50%);
+
+    box-sizing: border-box;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 17px;
+
+    background:
+        linear-gradient(
+            145deg,
+            var(--agent-light),
+            var(--agent-main)
+        );
+
+    box-shadow:
+        inset 0 2px 7px
+        rgb(255 255 255 / 45%),
+
+        inset 0 1px 0
+        rgb(255 255 255 / 70%);
+}
+
+
+/* =========================================================
+   ICON
+========================================================= */
+
+.agent-icon-container {
+
+    width:
+        42px;
+
+    height:
+        42px;
+
+    box-sizing:
+        border-box;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.75);
+
+    border-radius:
+        11px;
+
+    background:
+        rgba(255, 255, 255, 0.70);
+
+    box-shadow:
+        0 3px 7px
+        rgba(38, 48, 67, 0.12);
+
+}
+
+
+.agent-icon-container svg {
+
+    width:
+        24px;
+
+    height:
+        24px;
+
+}
+
+
+/* =========================================================
+   INFO CARD
+========================================================= */
+
+.agent-info {
+
+    position:
+        absolute;
+
+    z-index:
+        1;
+
+    top:
+        94px;
+
+    left:
+        50%;
+
+    width:
+        126px;
+
+    min-height:
+        62px;
+
+    box-sizing:
+        border-box;
+
+    transform:
+        translateX(-50%);
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    align-items:
+        center;
+
+    justify-content:
+        flex-end;
+
+    gap:
+        3px;
+
+    padding:
+        25px
+        8px
+        10px;
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.78);
+
+    border-radius:
+        17px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255, 255, 255, 0.97),
+            rgba(245, 247, 251, 0.95)
+        );
+
+    box-shadow:
+        0 8px 18px
+        rgba(45, 57, 78, 0.08);
+
+}
+
+
+/* =========================================================
+   TEXT
+========================================================= */
+
+.agent-title {
+
+    max-width:
+        108px;
+
+    overflow:
+        hidden;
+
+    text-overflow:
+        ellipsis;
+
+    white-space:
+        nowrap;
+
+    color:
+        #151b27;
+
+    font-size:
+        12px;
+
+    font-weight:
+        700;
+
+    line-height:
+        1.2;
+
+}
+
+
+.agent-description {
+
+    max-width:
+        108px;
+
+    overflow:
+        hidden;
+
+    text-overflow:
+        ellipsis;
+
+    white-space:
+        nowrap;
+
+    color:
+        #718096;
+
+    font-size:
+        9px;
+
+    font-weight:
+        400;
+
+}
+
+
+/* =========================================================
+   CONNECTIONS
+========================================================= */
+
+.agent-connection {
+
+    z-index:
+        10 !important;
+
+    width:
+        9px !important;
+
+    height:
+        9px !important;
+
+    border:
+        2px solid
+        #ffffff !important;
+
+    background:
+        #9ca8ba !important;
+
+    box-shadow:
+        0 2px 5px
+        rgba(40, 50, 68, 0.18);
+
+}
+
+
+.agent-input {
+
+    left:
+        -5px !important;
+
+    top:
+        74px !important;
+
+}
+
+
+.agent-output {
+
+    right:
+        -5px !important;
+
+    top:
+        74px !important;
+
+}
+
+
+/* =========================================================
+   COLORS
+========================================================= */
+
+
+/* API / YELLOW */
+
+.agent-yellow {
+
+    --agent-dark:
+        #f0a900;
+
+    --agent-main:
+        #ffc73d;
+
+    --agent-light:
+        #ffe584;
+
+    --agent-soft:
+        #fff2bd;
+
+}
+
+
+.agent-yellow
+.agent-output {
+
+    background:
+        #f5ae16 !important;
+
+}
+
+
+/* QA / RED */
+
+.agent-red {
+
+    --agent-dark:
+        #ef414d;
+
+    --agent-main:
+        #ff626b;
+
+    --agent-light:
+        #ffadb2;
+
+    --agent-soft:
+        #ffdadd;
+
+}
+
+
+.agent-red
+.agent-output {
+
+    background:
+        #ff5965 !important;
+
+}
+
+
+/* ENGINEER / PURPLE */
+
+.agent-purple {
+
+    --agent-dark:
+        #7549dd;
+
+    --agent-main:
+        #9167ef;
+
+    --agent-light:
+        #bca0ff;
+
+    --agent-soft:
+        #e4daff;
+
+}
+
+
+.agent-purple
+.agent-output {
+
+    background:
+        #8c61e9 !important;
+
+}
+
+
+/* SUPERVISOR / BLUE */
+.agent-yellow {
+    --agent-dark: #e9a000;
+    --agent-mid: #ffba00;
+    --agent-main: #ffc019;
+    --agent-light: #ffe584;
+}
+
+
+.agent-red {
+    --agent-dark: #e73e49;
+    --agent-mid: #f84d58;
+    --agent-main: #ff626b;
+    --agent-light: #ffadb2;
+}
+
+
+.agent-purple {
+    --agent-dark: #7042d6;
+    --agent-mid: #8053e4;
+    --agent-main: #9167ef;
+    --agent-light: #bca0ff;
+}
+
+
+.agent-blue {
+    --agent-dark: #4164dc;
+    --agent-mid: #5075ed;
+    --agent-main: #6489ff;
+    --agent-light: #9cb5ff;
+}
+
+
+.agent-pink {
+    --agent-dark: #dc4fa1;
+    --agent-mid: #e963b2;
+    --agent-main: #f57bc2;
+    --agent-light: #ffafe0;
+}
+
+
+/* =========================================================
+   SELECTION
+========================================================= */
+
+.react-flow__node.selected
+.agent-info {
+
+    box-shadow:
+        0 8px 20px
+        rgba(45, 57, 78, 0.10),
+
+        0 0 0 2px
+        rgba(87, 116, 255, 0.20);
+
+}
+
+
+/* =========================================================
+   HOVER
+========================================================= */
+
+.agent-shell:hover
+.agent-head-front,
+
+.agent-shell:hover
+.agent-body-front {
+
+    filter:
+        brightness(1.025);
+
+}

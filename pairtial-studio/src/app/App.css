@@ -29,5 +29,51 @@ header.top-bar {
     display: grid;
 }
 
+.tools-bt {
+    cursor: pointer;
+}
 
 
+@font-face {
+    font-family: "SF Pro Text";
+
+    src:
+        url("./assets/fonts/SF-Pro-Text-Regular.otf")
+        format("opentype");
+
+    font-weight: 400;
+    font-style: normal;
+
+    font-display: swap;
+}
+
+
+@font-face {
+    font-family: "SF Pro Text";
+
+    src:
+        url("./assets/fonts/SF-Pro-Text-Bold.otf")
+        format("opentype");
+
+    font-weight: 700;
+    font-style: normal;
+
+    font-display: swap;
+}
+
+
+/* =========================================
+   GLOBAL FONT
+========================================= */
+
+html,
+body,
+#root,
+button,
+input,
+textarea,
+select {
+    font-family:
+        "SF Pro Text",
+        sans-serif;
+}
