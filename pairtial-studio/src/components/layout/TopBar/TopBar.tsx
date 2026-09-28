@@ -4,12 +4,16 @@ import "./TopBar.css"
 type TopBarProps = {
     projectName: string
     isRunning: boolean
+
+    onExecute: () => void
+
 }
 
 
 export function TopBar({
     projectName,
-    isRunning
+    isRunning,
+    onExecute
 }: TopBarProps) {
 
     return (
@@ -79,12 +83,16 @@ export function TopBar({
             <div className="top-bar-actions">
 
                 <button
-                    className={
-                        isRunning
-                            ? "top-run-button running"
-                            : "top-run-button"
-                    }
-                >
+    className={
+        isRunning
+            ? "top-run-button running"
+            : "top-run-button"
+    }
+
+    onClick={onExecute}
+
+    disabled={isRunning}
+>
 
                     <span className="top-run-icon">
                         {isRunning ? "■" : "▷"}

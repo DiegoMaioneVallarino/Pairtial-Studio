@@ -13,7 +13,31 @@ import LeftBar, {
 } from "../components/layout/LeftBar/LeftBar"
 
 
+
 function App() {
+const [
+    isRunning,
+    setIsRunning
+] = useState(false)
+
+
+const [
+    executionRequest,
+    setExecutionRequest
+] = useState(0)
+
+function handleExecute() {
+
+    if (isRunning) {
+        return
+    }
+
+    setExecutionRequest(
+        current => current + 1
+    )
+}
+
+
 
    const [
     selectedButton,
@@ -27,9 +51,12 @@ function App() {
         <div className="app">
 
             <TopBar
-                projectName="My First Fabric"
-                isRunning={false}
-            />
+    projectName="My First Fabric"
+
+    isRunning={isRunning}
+
+    onExecute={handleExecute}
+/>
 
 
             <div className="app-body">
@@ -41,8 +68,12 @@ function App() {
 
 
                 <Workspace
-                    selectedButton={selectedButton}
-                />
+    selectedButton={selectedButton}
+
+    executionRequest={executionRequest}
+
+    onRunningChange={setIsRunning}
+/>
 
             </div>
 

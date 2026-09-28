@@ -4,6 +4,15 @@ import {
     useState
 } from "react"
 
+import type {
+    RuntimeEvent
+} from "../../../core/runtime/runtime.types"
+
+
+type BottomBarProps = {
+    events: RuntimeEvent[]
+}
+
 
 type BottomTab =
     | "execution"
@@ -13,7 +22,9 @@ type BottomTab =
     | "logs"
 
 
-function BottomBar() {
+function BottomBar({
+    events
+}: BottomBarProps) {
 
     const [
         selectedTab,
@@ -109,8 +120,11 @@ function BottomBar() {
                             <div className="bottom-content">
 
                                 {selectedTab === "execution" && (
-                                    <ExecutionView />
+                                    <ExecutionView
+                                        events={events}
+                                    />
                                 )}
+
 
                                 {selectedTab === "results" && (
                                     <div className="bottom-placeholder">
@@ -118,17 +132,20 @@ function BottomBar() {
                                     </div>
                                 )}
 
+
                                 {selectedTab === "envelopes" && (
                                     <div className="bottom-placeholder">
                                         Envelopes
                                     </div>
                                 )}
 
+
                                 {selectedTab === "costs" && (
                                     <div className="bottom-placeholder">
                                         Costos
                                     </div>
                                 )}
+
 
                                 {selectedTab === "logs" && (
                                     <div className="bottom-placeholder">
@@ -147,210 +164,195 @@ function BottomBar() {
 
                 <div id="BottomPanelRightArea">
 
-    <div id="BottomPanelRight">
+                    <div id="BottomPanelRight">
 
-        <div id="BottomPanelRightIn">
+                        <div id="BottomPanelRightIn">
 
-            {/* HEADER */}
+                            {/* HEADER */}
 
-            <div className="fabric-detail-header">
+                            <div className="fabric-detail-header">
 
-                <div className="fabric-detail-title">
+                                <div className="fabric-detail-title">
 
-                    <div className="fabric-detail-icon">
-                        ◈
-                    </div>
+                                    <div className="fabric-detail-icon">
+                                        ◈
+                                    </div>
 
-                    <strong>
-                        Fabric · Mathematics Collective
-                    </strong>
+                                    <strong>
+                                        Fabric · Mathematics Collective
+                                    </strong>
 
-                </div>
-
-
-                <div className="fabric-detail-status">
-
-                    <span className="fabric-status-badge">
-                        ◆ Completado
-                    </span>
-
-                    <span className="fabric-time-badge">
-                        3.4s
-                    </span>
-
-                </div>
-
-            </div>
+                                </div>
 
 
-            {/* TABS */}
+                                <div className="fabric-detail-status">
 
-            <div className="fabric-detail-tabs">
+                                    <span className="fabric-status-badge">
+                                        ◆ Completado
+                                    </span>
 
-                <button className="fabric-detail-tab selected">
-                    Detalles
-                </button>
+                                    <span className="fabric-time-badge">
+                                        3.4s
+                                    </span>
 
-                <button className="fabric-detail-tab">
-                    Input
-                </button>
+                                </div>
 
-                <button className="fabric-detail-tab">
-                    Output
-                </button>
-
-                <button className="fabric-detail-tab">
-                    Agentes (3)
-                </button>
-
-            </div>
+                            </div>
 
 
-            {/* BODY */}
+                            {/* TABS */}
 
-            <div className="fabric-detail-content">
+                            <div className="fabric-detail-tabs">
 
-                <div className="fabric-detail-data">
+                                <button className="fabric-detail-tab selected">
+                                    Detalles
+                                </button>
 
-                    <div className="fabric-detail-row">
-                        <span>
-                            Fabric
-                        </span>
+                                <button className="fabric-detail-tab">
+                                    Input
+                                </button>
 
-                        <strong>
-                            Mathematics Collective
-                        </strong>
-                    </div>
+                                <button className="fabric-detail-tab">
+                                    Output
+                                </button>
 
+                                <button className="fabric-detail-tab">
+                                    Agentes (3)
+                                </button>
 
-                    <div className="fabric-detail-row">
-                        <span>
-                            Tiempo
-                        </span>
-
-                        <strong>
-                            3.4 segundos
-                        </strong>
-                    </div>
+                            </div>
 
 
-                    <div className="fabric-detail-row">
-                        <span>
-                            Agentes
-                        </span>
+                            {/* BODY */}
 
-                        <strong>
-                            3
-                        </strong>
-                    </div>
+                            <div className="fabric-detail-content">
 
+                                <div className="fabric-detail-data">
 
-                    <div className="fabric-detail-row">
-                        <span>
-                            Envelopes generados
-                        </span>
+                                    <div className="fabric-detail-row">
+                                        <span>
+                                            Fabric
+                                        </span>
 
-                        <strong>
-                            1
-                        </strong>
-                    </div>
+                                        <strong>
+                                            Mathematics Collective
+                                        </strong>
+                                    </div>
 
 
-                    <div className="fabric-detail-row">
-                        <span>
-                            Costo estimado
-                        </span>
+                                    <div className="fabric-detail-row">
+                                        <span>
+                                            Tiempo
+                                        </span>
 
-                        <strong>
-                            $0.012
-                        </strong>
-                    </div>
-
-                </div>
+                                        <strong>
+                                            3.4 segundos
+                                        </strong>
+                                    </div>
 
 
-                <div className="fabric-detail-preview">
+                                    <div className="fabric-detail-row">
+                                        <span>
+                                            Agentes
+                                        </span>
 
-                    <div className="fabric-preview-elevator">
+                                        <strong>
+                                            3
+                                        </strong>
+                                    </div>
 
-                        <div className="fabric-preview-top">
-                            ▲ ⚡
+
+                                    <div className="fabric-detail-row">
+                                        <span>
+                                            Envelopes generados
+                                        </span>
+
+                                        <strong>
+                                            1
+                                        </strong>
+                                    </div>
+
+
+                                    <div className="fabric-detail-row">
+                                        <span>
+                                            Costo estimado
+                                        </span>
+
+                                        <strong>
+                                            $0.012
+                                        </strong>
+                                    </div>
+
+                                </div>
+
+
+                                <div className="fabric-detail-preview">
+
+                                    <div className="fabric-preview-elevator">
+
+                                        <div className="fabric-preview-top">
+                                            ▲ ⚡
+                                        </div>
+
+                                        <div className="fabric-preview-door">
+
+                                            <div className="fabric-preview-agent blue" />
+
+                                            <div className="fabric-preview-agent purple" />
+
+                                            <div className="fabric-preview-agent green" />
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            {/* BUTTON */}
+
+                            <button className="fabric-detail-open">
+                                Abrir detalles de la Fabric
+
+                                <span>
+                                    →
+                                </span>
+                            </button>
+
                         </div>
 
-                        <div className="fabric-preview-door">
-
-                            <div className="fabric-preview-agent blue" />
-
-                            <div className="fabric-preview-agent purple" />
-
-                            <div className="fabric-preview-agent green" />
-
-                        </div>
-
                     </div>
 
                 </div>
-
-            </div>
-
-
-            {/* BUTTON */}
-
-            <button className="fabric-detail-open">
-                Abrir detalles de la Fabric
-                <span>
-                    →
-                </span>
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
 
             </div>
 
         </div>
     )
-
 }
 
 
-function ExecutionView() {
+type ExecutionViewProps = {
+    events: RuntimeEvent[]
+}
 
-    const events = [
-        {
-            time: "20:12:01",
-            type: "input",
-            name: "Entrada",
-            text: "Se recibió un archivo: sprite.png (420 KB)"
-        },
-        {
-            time: "20:12:03",
-            type: "api",
-            name: "Agente API",
-            text: "Consultando API de colores..."
-        },
-        {
-            time: "20:12:07",
-            type: "fabric",
-            name: "Fabric",
-            text: "3 agentes procesando la solicitud..."
-        },
-        {
-            time: "20:12:15",
-            type: "quality",
-            name: "Revisor QA",
-            text: "Resultado validado • calidad: 92%"
-        },
-        {
-            time: "20:12:16",
-            type: "output",
-            name: "Salida",
-            text: "Envelope enviado al usuario"
-        }
-    ]
+
+function ExecutionView({
+    events
+}: ExecutionViewProps) {
+
+    if (
+        events.length === 0
+    ) {
+
+        return (
+            <div className="bottom-placeholder">
+                No hay ejecución activa
+            </div>
+        )
+    }
 
 
     return (
@@ -359,45 +361,148 @@ function ExecutionView() {
             {events.map((
                 event,
                 index
-            ) => (
+            ) => {
 
-                <div
-                    key={index}
-                    className="execution-row"
-                >
-
-                    <span className="execution-time">
-                        {event.time}
-                    </span>
+                const time =
+                    new Date(
+                        event.timestamp
+                    ).toLocaleTimeString()
 
 
-                    <div className="execution-line">
+                return (
+                    <div
+                        key={`${event.type}-${event.timestamp}-${index}`}
+                        className="execution-row"
+                    >
 
-                        <span
-                            className={
-                                `execution-dot ${event.type}`
-                            }
-                        />
+                        <span className="execution-time">
+                            {time}
+                        </span>
+
+
+                        <div className="execution-line">
+
+                            <span
+                                className={
+                                    `execution-dot ${getEventClass(event)}`
+                                }
+                            />
+
+                        </div>
+
+
+                        <strong className="execution-name">
+                            {getEventName(event)}
+                        </strong>
+
+
+                        <span className="execution-message">
+                            {getEventMessage(event)}
+                        </span>
 
                     </div>
-
-
-                    <strong className="execution-name">
-                        {event.name}
-                    </strong>
-
-
-                    <span className="execution-message">
-                        {event.text}
-                    </span>
-
-                </div>
-
-            ))}
+                )
+            })}
 
         </div>
     )
+}
 
+
+function getEventClass(
+    event: RuntimeEvent
+) {
+
+    switch (event.type) {
+
+        case "run.started":
+            return "input"
+
+        case "node.started":
+            return "api"
+
+        case "envelope.created":
+            return "fabric"
+
+        case "node.completed":
+            return "quality"
+
+        case "node.failed":
+        case "run.failed":
+            return "error"
+
+        case "run.completed":
+            return "output"
+
+        default:
+            return ""
+    }
+}
+
+
+function getEventName(
+    event: RuntimeEvent
+) {
+
+    switch (event.type) {
+
+        case "run.started":
+            return "Sistema"
+
+        case "run.completed":
+            return "Sistema"
+
+        case "run.failed":
+            return "Sistema"
+
+        case "node.started":
+            return "Nodo"
+
+        case "node.completed":
+            return "Nodo"
+
+        case "node.failed":
+            return "Nodo"
+
+        case "envelope.created":
+            return "Envelope"
+
+        default:
+            return "Evento"
+    }
+}
+
+
+function getEventMessage(
+    event: RuntimeEvent
+) {
+
+    switch (event.type) {
+
+        case "run.started":
+            return "Ejecución iniciada"
+
+        case "run.completed":
+            return "Ejecución completada"
+
+        case "run.failed":
+            return `Ejecución fallida: ${event.error}`
+
+        case "node.started":
+            return `Ejecutando ${event.nodeId}`
+
+        case "node.completed":
+            return `Nodo ${event.nodeId} completado`
+
+        case "node.failed":
+            return `Error en ${event.nodeId}: ${event.error}`
+
+        case "envelope.created":
+            return `Envelope ${event.envelope.id} generado`
+
+        default:
+            return "Evento desconocido"
+    }
 }
 
 
