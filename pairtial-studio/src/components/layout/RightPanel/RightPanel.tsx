@@ -4,9 +4,21 @@ import {
     useState
 } from "react"
 
-import { FabricsPanel } from "./FabricsPanel/FabricsPanel"
-import { PropertiesPanel } from "./PropertiesPanel/PropertiesPanel"
-import { SystemsPanel } from "./SystemsPanel/SystemsPanel"
+import type {
+    Node
+} from "@xyflow/react"
+
+import {
+    FabricsPanel
+} from "./FabricsPanel/FabricsPanel"
+
+import {
+    PropertiesPanel
+} from "./PropertiesPanel/PropertiesPanel"
+
+import {
+    SystemsPanel
+} from "./SystemsPanel/SystemsPanel"
 
 
 type RightPanelTab =
@@ -16,12 +28,23 @@ type RightPanelTab =
 
 
 type RightPanelProps = {
+
     selectedPanel?: RightPanelTab
+
+    selectedNode:
+        Node | null
+
+    onUpdateNode: (
+        data: Record<string, unknown>
+    ) => void
+
 }
 
 
 export default function RightPanel({
-    selectedPanel = "systems"
+    selectedPanel = "systems",
+    selectedNode,
+    onUpdateNode
 }: RightPanelProps) {
 
     const [
@@ -52,7 +75,9 @@ export default function RightPanel({
                                     }`
                                 }
                                 onClick={() =>
-                                    setCurrentPanel("systems")
+                                    setCurrentPanel(
+                                        "systems"
+                                    )
                                 }
                             >
                                 <span className="right-panelIn-btn-icon">
@@ -74,7 +99,9 @@ export default function RightPanel({
                                     }`
                                 }
                                 onClick={() =>
-                                    setCurrentPanel("fabrics")
+                                    setCurrentPanel(
+                                        "fabrics"
+                                    )
                                 }
                             >
                                 <span className="right-panelIn-btn-icon">
@@ -96,7 +123,9 @@ export default function RightPanel({
                                     }`
                                 }
                                 onClick={() =>
-                                    setCurrentPanel("properties")
+                                    setCurrentPanel(
+                                        "properties"
+                                    )
                                 }
                             >
                                 <span className="right-panelIn-btn-icon">
@@ -117,12 +146,21 @@ export default function RightPanel({
                                 <SystemsPanel />
                             )}
 
+
                             {currentPanel === "fabrics" && (
                                 <FabricsPanel />
                             )}
 
+
                             {currentPanel === "properties" && (
-                                <PropertiesPanel />
+                                <PropertiesPanel
+                                    node={
+                                        selectedNode
+                                    }
+                                    onUpdate={
+                                        onUpdateNode
+                                    }
+                                />
                             )}
 
                         </div>

@@ -18,7 +18,6 @@ import type {
     RuntimeEvent
 } from "../../core/runtime/runtime.types"
 
-
 import {
     ReactFlow,
     Background,
@@ -32,22 +31,16 @@ import {
 
 import "@xyflow/react/dist/style.css"
 
-
 import BottomBar from "../../components/layout/BottomBar/BottomBar"
-
 import RightPanel from "../../components/layout/RightPanel/RightPanel"
 
 import AgentNode from "../nodes/AgentNode/AgentNode"
-
 import ApiNode from "../nodes/ApiNode/ApiNode"
-
 import QualityNode from "../nodes/QualityNode/QualityNode"
-
 import EngineerNode from "../nodes/EngineerNode/EngineerNode"
-
 import SupervisorNode from "../nodes/SupervisorNode/SupervisorNode"
-
 import HRNode from "../nodes/HRNode/HRNode"
+
 import type {
     LeftBarButtonsTypes
 } from "../../components/layout/LeftBar/LeftBar"
@@ -63,9 +56,8 @@ type WorkspaceProps = {
         running: boolean
     ) => void
 }
-type BottomBarProps = {
-    events: RuntimeEvent[]
-}
+
+
 const nodeTypes = {
 
     agent:
@@ -89,136 +81,6 @@ const nodeTypes = {
 }
 
 
-function Workspace({
-    selectedButton,
-    executionRequest,
-    onRunningChange
-}: WorkspaceProps) {
-
-const [
-    runtimeEvents,
-    setRuntimeEvents
-] = useState<RuntimeEvent[]>([])
-
-
-    const [
-        nodes,
-        setNodes,
-        onNodesChange
-    ] = useNodesState<Node>([])
-
-
-    const [
-        edges,
-        setEdges,
-        onEdgesChange
-    ] = useEdgesState<Edge>([])
-useEffect(() => {
-
-    if (
-        executionRequest === 0
-    ) {
-        return
-    }
-
-
-    async function execute() {
-
-        onRunningChange(true)
-
-
-        try {
-
-            const system =
-                reactFlowToPairtialSystem(
-                    nodes,
-                    edges,
-                    "My First Fabric"
-                )
-
-
-            console.log(
-                "PAIRtial System:",
-                system
-            )
-
-
-            setRuntimeEvents([])
-
-
-const result =
-    await runSystem(
-        system,
-        {
-            onEvent: event => {
-
-                setRuntimeEvents(
-                    current => [
-                        ...current,
-                        event
-                    ]
-                )
-
-            }
-        }
-    )
-
-
-            console.log(
-                "PAIRtial Runtime Result:",
-                result
-            )
-
-        } catch (error) {
-
-            console.error(
-                "PAIRtial execution failed:",
-                error
-            )
-
-        } finally {
-
-            onRunningChange(false)
-
-        }
-    }
-
-
-    execute()
-
-
-}, [
-    executionRequest
-])
-
-    const onConnect =
-        useCallback(
-
-            (
-                connection:
-                    Connection
-            ) => {
-
-                setEdges(
-                    currentEdges =>
-                        addEdge(
-                            {
-                                ...connection,
-
-                                type:
-                                    "smoothstep"
-                            },
-
-                            currentEdges
-                        )
-                )
-
-            },
-
-            [
-                setEdges
-            ]
-        )
 const nodeDefaults = {
 
     agent: {
@@ -253,6 +115,217 @@ const nodeDefaults = {
 
 }
 
+
+function Workspace({
+    selectedButton,
+    executionRequest,
+    onRunningChange
+}: WorkspaceProps) {
+
+    const [
+        runtimeEvents,
+        setRuntimeEvents
+    ] = useState<RuntimeEvent[]>([])
+
+
+    const [
+        selectedNodeId,
+        setSelectedNodeId
+    ] = useState<string | null>(null)
+
+
+    const [
+        nodes,
+        setNodes,
+        onNodesChange
+    ] = useNodesState<Node>([])
+
+
+    const [
+        edges,
+        setEdges,
+        onEdgesChange
+    ] = useEdgesState<Edge>([])
+
+
+    const selectedNode =
+        nodes.find(
+            node =>
+                node.id === selectedNodeId
+        ) ?? null
+
+
+    useEffect(() => {
+
+        if (
+            executionRequest === 0
+        ) {
+            return
+        }
+
+
+        async function execute() {
+
+            onRunningChange(true)
+
+
+            try {
+
+                const system =
+                    reactFlowToPairtialSystem(
+                        nodes,
+                        edges,
+                        "My First Fabric"
+                    )
+
+
+                console.log(
+                    "PAIRtial System:",
+                    system
+                )
+
+
+                setRuntimeEvents([])
+
+
+                const result =
+                    await runSystem(
+                        system,
+                        {
+                            onEvent: event => {
+
+                                setRuntimeEvents(
+                                    current => [
+                                        ...current,
+                                        event
+                                    ]
+                                )
+
+                            }
+                        }
+                    )
+
+
+                console.log(
+                    "PAIRtial Runtime Result:",
+                    result
+                )
+
+            } catch (error) {
+
+                console.error(
+                    "PAIRtial execution failed:",
+                    error
+                )
+
+            } finally {
+
+                onRunningChange(false)
+
+            }
+        }
+
+
+        execute()
+
+
+    }, [
+        executionRequest
+    ])
+
+
+    const onConnect =
+        useCallback(
+
+            (
+                connection:
+                    Connection
+            ) => {
+
+                setEdges(
+                    currentEdges =>
+                        addEdge(
+                            {
+                                ...connection,
+
+                                type:
+                                    "smoothstep"
+                            },
+
+                            currentEdges
+                        )
+                )
+
+            },
+
+            [
+                setEdges
+            ]
+        )
+
+
+    const handleNodeClick =
+        useCallback(
+            (
+                _event: React.MouseEvent,
+                node: Node
+            ) => {
+
+                setSelectedNodeId(
+                    node.id
+                )
+
+            },
+            []
+        )
+
+
+    const updateSelectedNodeData =
+        useCallback(
+            (
+                data:
+                    Record<string, unknown>
+            ) => {
+
+                if (!selectedNodeId) {
+                    return
+                }
+
+
+                setNodes(
+                    currentNodes =>
+                        currentNodes.map(
+                            node => {
+
+                                if (
+                                    node.id !==
+                                    selectedNodeId
+                                ) {
+                                    return node
+                                }
+
+
+                                return {
+                                    ...node,
+
+                                    data: {
+                                        ...node.data,
+                                        ...data
+                                    }
+                                }
+
+                            }
+                        )
+                )
+
+            },
+            [
+                selectedNodeId,
+                setNodes
+            ]
+        )
+
+
     const handlePaneClick =
         useCallback(
 
@@ -261,12 +334,15 @@ const nodeDefaults = {
                     React.MouseEvent
             ) => {
 
-               if (
-    selectedButton === null ||
-    selectedButton === "fabrics"
-) {
-    return
-}
+                if (
+                    selectedButton === null ||
+                    selectedButton === "fabrics"
+                ) {
+
+                    setSelectedNodeId(null)
+
+                    return
+                }
 
 
                 const target =
@@ -294,34 +370,34 @@ const nodeDefaults = {
 
 
                 const nodeType =
-    selectedButton
+                    selectedButton
 
 
-const defaults =
-    nodeDefaults[nodeType]
+                const defaults =
+                    nodeDefaults[nodeType]
 
 
-const newNode: Node = {
+                const newNode: Node = {
 
-    id:
-        crypto.randomUUID(),
+                    id:
+                        crypto.randomUUID(),
 
-    type:
-        nodeType,
+                    type:
+                        nodeType,
 
-    position,
+                    position,
 
-    data: {
+                    data: {
 
-        name:
-            defaults.name,
+                        name:
+                            defaults.name,
 
-        description:
-            defaults.description
+                        description:
+                            defaults.description
 
-    }
+                    }
 
-}
+                }
 
 
                 setNodes(
@@ -334,11 +410,15 @@ const newNode: Node = {
                     ]
                 )
 
+
+                setSelectedNodeId(
+                    newNode.id
+                )
+
             },
 
             [
                 selectedButton,
-                nodes.length,
                 setNodes
             ]
         )
@@ -379,6 +459,10 @@ const newNode: Node = {
                                 onConnect
                             }
 
+                            onNodeClick={
+                                handleNodeClick
+                            }
+
                             onPaneClick={
                                 handlePaneClick
                             }
@@ -402,15 +486,23 @@ const newNode: Node = {
 
 
                 <RightPanel
-                    selectedPanel="fabrics"
+                    selectedPanel="properties"
+                    selectedNode={
+                        selectedNode
+                    }
+                    onUpdateNode={
+                        updateSelectedNodeData
+                    }
                 />
 
             </div>
 
 
             <BottomBar
-    events={runtimeEvents}
-/>
+                events={
+                    runtimeEvents
+                }
+            />
 
         </div>
     )
