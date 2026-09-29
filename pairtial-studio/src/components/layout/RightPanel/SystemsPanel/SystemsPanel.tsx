@@ -45,6 +45,19 @@ export function SystemsPanel() {
         )
 
 
+        const deleteSystem =
+    useSystemStore(
+        state =>
+            state.deleteSystem
+    )
+
+const [
+    openMenuId,
+    setOpenMenuId
+] = useState<string | null>(null)
+
+
+
     const filteredSystems =
         systems.filter(
             system =>
@@ -183,9 +196,55 @@ export function SystemsPanel() {
                             </div>
 
 
-                            <span className="system-options">
-                                ⋮
-                            </span>
+                           <div className="system-options-wrapper">
+
+    <button
+        className="system-options"
+        onClick={
+            event => {
+
+                event.stopPropagation()
+
+                setOpenMenuId(
+                    current =>
+                        current === system.id
+                            ? null
+                            : system.id
+                )
+            }
+        }
+    >
+        ⋮
+    </button>
+
+
+    {openMenuId === system.id && (
+
+        <div className="system-options-menu">
+
+            <button
+                className="system-delete-btn"
+                onClick={
+                    event => {
+
+                        event.stopPropagation()
+
+                        deleteSystem(
+                            system.id
+                        )
+
+                        setOpenMenuId(null)
+                    }
+                }
+            >
+                Eliminar
+            </button>
+
+        </div>
+
+    )}
+
+</div>
 
                         </button>
 
