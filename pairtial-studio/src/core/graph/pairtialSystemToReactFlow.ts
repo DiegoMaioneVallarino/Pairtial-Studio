@@ -64,7 +64,7 @@ export function pairtialSystemToReactFlow(
                     edge.targetPortId,
 
                 type:
-                    "smoothstep"
+                    "execution"
 
             })
         )

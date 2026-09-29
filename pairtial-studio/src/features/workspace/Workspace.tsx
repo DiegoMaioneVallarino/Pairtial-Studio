@@ -28,6 +28,7 @@ import {
     pairtialSystemToReactFlow
 } from "../../core/graph/pairtialSystemToReactFlow"
 
+import ExecutionEdge from "../edges/ExecutionEdge/ExecutionEdge"
 
 
 import {
@@ -92,6 +93,12 @@ const nodeTypes = {
 
 }
 
+const edgeTypes = {
+
+    execution:
+        ExecutionEdge
+
+}
 
 const nodeDefaults = {
 
@@ -352,6 +359,68 @@ const system = {
                                         event
                                     ]
                                 )
+
+                               if (
+    event.type ===
+    "envelope.created"
+) {
+
+    const sourceNodeId =
+        event.nodeId
+
+
+    setEdges(
+        currentEdges =>
+            currentEdges.map(
+                edge =>
+                    edge.source ===
+                    sourceNodeId
+                        ? {
+                            ...edge,
+
+                            data: {
+                                ...edge.data,
+
+                                pulse:
+                                    Date.now(),
+
+                                active:
+                                    true
+                            }
+                        }
+                        : edge
+            )
+    )
+
+
+    window.setTimeout(
+        () => {
+
+            setEdges(
+                currentEdges =>
+                    currentEdges.map(
+                        edge =>
+                            edge.source ===
+                            sourceNodeId
+                                ? {
+                                    ...edge,
+
+                                    data: {
+                                        ...edge.data,
+
+                                        active:
+                                            false
+                                    }
+                                }
+                                : edge
+                    )
+            )
+
+        },
+        600
+    )
+}
+
 if (
     event.type ===
     "node.started"
@@ -479,7 +548,7 @@ if (
                                 ...connection,
 
                                 type:
-                                    "smoothstep"
+                                   "execution"
                             },
 
                             currentEdges
@@ -700,7 +769,9 @@ if (
                             deleteKeyCode={
                                 "Delete"
                             }
-
+                                edgeTypes={
+                                    edgeTypes
+                                }
                         >
 
                             <Background

@@ -1,0 +1,58 @@
+.execution-edge-path {
+    stroke:
+        rgba(
+            105,
+            120,
+            145,
+            0.65
+        );
+
+    stroke-width:
+        2;
+
+    transition:
+        stroke 180ms ease,
+        filter 180ms ease;
+}
+
+
+.execution-edge-particle {
+    fill:
+        #72b8ff;
+
+    filter:
+        drop-shadow(
+            0 0 4px
+            rgba(
+                90,
+                170,
+                255,
+                1
+            )
+        )
+        drop-shadow(
+            0 0 9px
+            rgba(
+                90,
+                170,
+                255,
+                0.8
+            )
+        );
+}
+
+.execution-edge-active {
+    stroke:
+        #72b8ff;
+
+    filter:
+        drop-shadow(
+            0 0 4px
+            rgba(
+                90,
+                170,
+                255,
+                0.7
+            )
+        );
+}
