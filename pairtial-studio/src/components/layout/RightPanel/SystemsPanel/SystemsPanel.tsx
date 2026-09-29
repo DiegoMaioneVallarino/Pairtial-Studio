@@ -1,55 +1,82 @@
 import "./SystemsPanel.css"
 
+import {
+    useState
+} from "react"
 
-type SystemItem = {
-    id: number
-    name: string
-    modified: string
-    color: string
-    icon: string
-}
-
-
-const systems: SystemItem[] = [
-    {
-        id: 1,
-        name: "PixelMathness AI",
-        modified: "Modificado hoy 08:12 p. m.",
-        color: "#85ccff",
-        icon: "🤖"
-    },
-    {
-        id: 2,
-        name: "News Intelligence",
-        modified: "Modificado 8/09/2026",
-        color: "#ffbac9",
-        icon: "📰"
-    },
-    {
-        id: 3,
-        name: "Research Lab",
-        modified: "Modificado 7/09/2026",
-        color: "#8077ff",
-        icon: "🔬"
-    },
-    {
-        id: 4,
-        name: "Customer Service",
-        modified: "Modificado 5/09/2026",
-        color: "#4f5289",
-        icon: "👩‍💼"
-    },
-    {
-        id: 5,
-        name: "Finance Analyzer",
-        modified: "Modificado 1/09/2026",
-        color: "#40566d",
-        icon: "📊"
-    }
-]
+import {
+    useSystemStore
+} from "../../../../stores/systemStore"
 
 
 export function SystemsPanel() {
+
+    const [
+        search,
+        setSearch
+    ] = useState("")
+
+
+    const systems =
+        useSystemStore(
+            state =>
+                state.systems
+        )
+
+
+    const activeSystemId =
+        useSystemStore(
+            state =>
+                state.activeSystemId
+        )
+
+
+    const createSystem =
+        useSystemStore(
+            state =>
+                state.createSystem
+        )
+
+
+    const selectSystem =
+        useSystemStore(
+            state =>
+                state.selectSystem
+        )
+
+
+    const filteredSystems =
+        systems.filter(
+            system =>
+                system.name
+                    .toLowerCase()
+                    .includes(
+                        search.toLowerCase()
+                    )
+        )
+
+
+    function formatModified(
+        timestamp: number
+    ) {
+
+        const date =
+            new Date(timestamp)
+
+
+        return `Modificado ${
+            date.toLocaleDateString()
+        } ${
+            date.toLocaleTimeString(
+                [],
+                {
+                    hour: "2-digit",
+                    minute: "2-digit"
+                }
+            )
+        }`
+    }
+
 
     return (
         <section className="systems-panel">
@@ -65,12 +92,24 @@ export function SystemsPanel() {
                     <input
                         type="text"
                         placeholder="Buscar sistemas..."
+                        value={search}
+                        onChange={
+                            event =>
+                                setSearch(
+                                    event.target.value
+                                )
+                        }
                     />
 
                 </div>
 
 
-                <button className="systems-new-btn">
+                <button
+                    className="systems-new-btn"
+                    onClick={
+                        createSystem
+                    }
+                >
 
                     <span>
                         +
@@ -85,56 +124,79 @@ export function SystemsPanel() {
 
             <div className="systems-list">
 
-                {systems.map((
-                    system,
-                    index
-                ) => (
+                {filteredSystems.length === 0 && (
 
-                    <button
-                        key={system.id}
-                        className={
-                            `system-item ${
-                                index === 0
-                                    ? "selected"
-                                    : ""
-                            }`
-                        }
-                    >
+                    <div className="systems-empty">
+                        No hay sistemas.
+                    </div>
 
-                        <div
-                            className="system-icon"
-                            style={{
-                                background:
-                                    system.color
-                            }}
+                )}
+
+
+                {filteredSystems.map(
+                    system => (
+
+                        <button
+                            key={
+                                system.id
+                            }
+                            className={
+                                `system-item ${
+                                    system.id ===
+                                    activeSystemId
+                                        ? "selected"
+                                        : ""
+                                }`
+                            }
+                            onClick={() =>
+                                selectSystem(
+                                    system.id
+                                )
+                            }
                         >
-                            {system.icon}
-                        </div>
+
+                            <div
+                                className="system-icon"
+                                style={{
+                                    background:
+                                        "#85ccff"
+                                }}
+                            >
+                                🤖
+                            </div>
 
 
-                        <div className="system-info">
+                            <div className="system-info">
 
-                            <span className="system-name">
-                                {system.name}
+                                <span className="system-name">
+                                    {system.name}
+                                </span>
+
+                                <span className="system-modified">
+                                    {
+                                        formatModified(
+                                            system.updatedAt
+                                        )
+                                    }
+                                </span>
+
+                            </div>
+
+
+                            <span className="system-options">
+                                ⋮
                             </span>
 
-                            <span className="system-modified">
-                                {system.modified}
-                            </span>
+                        </button>
 
-                        </div>
-
-
-                        <span className="system-options">
-                            ⋮
-                        </span>
-
-                    </button>
-
-                ))}
+                    )
+                )}
 
             </div>
 
         </section>
     )
 }
+
+
+export default SystemsPanel

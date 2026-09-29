@@ -3,7 +3,8 @@ import "./Workspace.css"
 import {
     useCallback,
     useEffect,
-    useState
+    useState,
+    useRef
 } from "react"
 
 import {
@@ -17,6 +18,17 @@ import {
 import type {
     RuntimeEvent
 } from "../../core/runtime/runtime.types"
+
+
+import {
+    useSystemStore
+} from "../../stores/systemStore"
+
+import {
+    pairtialSystemToReactFlow
+} from "../../core/graph/pairtialSystemToReactFlow"
+
+
 
 import {
     ReactFlow,
@@ -127,6 +139,38 @@ function Workspace({
         setRuntimeEvents
     ] = useState<RuntimeEvent[]>([])
 
+    const systems =
+    useSystemStore(
+        state =>
+            state.systems
+    )
+
+
+        const activeSystemId =
+            useSystemStore(
+                state =>
+                    state.activeSystemId
+            )
+
+
+        const updateSystemGraph =
+            useSystemStore(
+                state =>
+                    state.updateSystemGraph
+            )
+
+
+        const activeSystem =
+            systems.find(
+                system =>
+                    system.id ===
+                    activeSystemId
+            ) ?? null
+
+
+        const loadingSystemRef =
+            useRef(false)
+
 
     const [
         selectedNodeId,
@@ -147,6 +191,93 @@ function Workspace({
         onEdgesChange
     ] = useEdgesState<Edge>([])
 
+
+
+    useEffect(() => {
+
+    loadingSystemRef.current =
+        true
+
+
+    if (!activeSystem) {
+
+        setNodes([])
+        setEdges([])
+        setSelectedNodeId(null)
+
+        queueMicrotask(() => {
+            loadingSystemRef.current =
+                false
+        })
+
+        return
+    }
+
+
+    const graph =
+        pairtialSystemToReactFlow(
+            activeSystem
+        )
+
+
+    setNodes(
+        graph.nodes
+    )
+
+    setEdges(
+        graph.edges
+    )
+
+    setSelectedNodeId(null)
+
+
+    queueMicrotask(() => {
+        loadingSystemRef.current =
+            false
+    })
+
+
+}, [
+    activeSystemId,
+    setNodes,
+    setEdges
+])
+
+useEffect(() => {
+
+    if (
+        loadingSystemRef.current
+    ) {
+        return
+    }
+
+
+    if (!activeSystemId) {
+        return
+    }
+
+
+    const system =
+        reactFlowToPairtialSystem(
+            nodes,
+            edges,
+            "Temporary"
+        )
+
+
+    updateSystemGraph(
+        activeSystemId,
+        system.nodes,
+        system.edges
+    )
+
+
+}, [
+    nodes,
+    edges,
+    activeSystemId,
+    updateSystemGraph
+])
 
     const selectedNode =
         nodes.find(
@@ -171,12 +302,33 @@ function Workspace({
 
             try {
 
-                const system =
-                    reactFlowToPairtialSystem(
-                        nodes,
-                        edges,
-                        "My First Fabric"
-                    )
+                if (!activeSystem) {
+    throw new Error(
+        "No active system selected"
+    )
+}
+
+
+const graph =
+    reactFlowToPairtialSystem(
+        nodes,
+        edges,
+        activeSystem.name
+    )
+
+
+const system = {
+    ...graph,
+
+    id:
+        activeSystem.id,
+
+    createdAt:
+        activeSystem.createdAt,
+
+    updatedAt:
+        activeSystem.updatedAt
+}
 
 
                 console.log(

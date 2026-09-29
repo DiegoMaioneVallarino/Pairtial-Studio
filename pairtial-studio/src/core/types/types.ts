@@ -36,6 +36,9 @@ export type PairtialEdge = {
 
     sourceNodeId: string
     targetNodeId: string
+
+    sourcePortId?: string
+    targetPortId?: string
 }
 
 
@@ -46,7 +49,11 @@ export type PairtialSystem = {
 
     nodes: PairtialNode[]
     edges: PairtialEdge[]
+
+    createdAt: number
+    updatedAt: number
 }
+
 
 export type NodeExecutionState =
     | "idle"
