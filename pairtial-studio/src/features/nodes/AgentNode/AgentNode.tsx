@@ -4,12 +4,19 @@ import type {
 
 import AgentShell from "../AgentShell/AgentShell"
 
+import type {
+    NodeExecutionState
+} from "../../../core/types/types"
+
 
 type AgentNodeData = {
 
     name: string
 
     description: string
+
+    executionState?:
+        NodeExecutionState
 }
 
 
@@ -33,6 +40,10 @@ function AgentNode({
 
             description={
                 agent.description
+            }
+
+            executionState={
+                agent.executionState
             }
 
             color="yellow"

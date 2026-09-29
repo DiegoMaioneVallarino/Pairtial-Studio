@@ -9,6 +9,10 @@ import {
     Position
 } from "@xyflow/react"
 
+import type {
+    NodeExecutionState
+} from "../../../core/types/types"
+
 
 export type AgentColor =
     | "yellow"
@@ -27,6 +31,9 @@ type AgentShellProps = {
     color: AgentColor
 
     icon: ReactNode
+
+    executionState?:
+        NodeExecutionState
 }
 
 
@@ -35,7 +42,8 @@ export default function AgentShell({
     name,
     description,
     color,
-    icon
+    icon,
+    executionState = "idle"
 
 }: AgentShellProps) {
 
@@ -43,11 +51,9 @@ export default function AgentShell({
 
         <div
             className={
-                `agent-shell agent-${color}`
+                `agent-shell agent-${color} execution-${executionState}`
             }
         >
-
-            {/* INPUT */}
 
             <Handle
                 type="target"
@@ -56,27 +62,19 @@ export default function AgentShell({
             />
 
 
-            {/* ROBOT */}
-
             <div className="agent-robot">
 
+                <div className="agent-execution-glow" />
 
-                {/* CABEZA - RECTÁNGULO TRASERO */}
 
                 <div className="agent-head-back" />
 
 
-                {/* CABEZA - RECTÁNGULO FRONTAL */}
-
                 <div className="agent-head-front" />
 
 
-                {/* CUERPO - RECTÁNGULO TRASERO */}
-
                 <div className="agent-body-back" />
 
-
-                {/* CUERPO - RECTÁNGULO FRONTAL */}
 
                 <div className="agent-body-front">
 
@@ -89,10 +87,18 @@ export default function AgentShell({
                 </div>
 
 
+                <div className="agent-processing-indicator">
+
+                    <span />
+
+                    <span />
+
+                    <span />
+
+                </div>
+
             </div>
 
-
-            {/* INFORMACIÓN */}
 
             <div className="agent-info">
 
@@ -106,8 +112,6 @@ export default function AgentShell({
 
             </div>
 
-
-            {/* OUTPUT */}
 
             <Handle
                 type="source"

@@ -352,7 +352,85 @@ const system = {
                                         event
                                     ]
                                 )
+if (
+    event.type ===
+    "node.started"
+) {
 
+    setNodes(
+        currentNodes =>
+            currentNodes.map(
+                node =>
+                    node.id ===
+                    event.nodeId
+                        ? {
+                            ...node,
+
+                            data: {
+                                ...node.data,
+
+                                executionState:
+                                    "running"
+                            }
+                        }
+                        : node
+            )
+    )
+}
+
+
+if (
+    event.type ===
+    "node.completed"
+) {
+
+    setNodes(
+        currentNodes =>
+            currentNodes.map(
+                node =>
+                    node.id ===
+                    event.nodeId
+                        ? {
+                            ...node,
+
+                            data: {
+                                ...node.data,
+
+                                executionState:
+                                    "success"
+                            }
+                        }
+                        : node
+            )
+    )
+}
+
+
+if (
+    event.type ===
+    "node.failed"
+) {
+
+    setNodes(
+        currentNodes =>
+            currentNodes.map(
+                node =>
+                    node.id ===
+                    event.nodeId
+                        ? {
+                            ...node,
+
+                            data: {
+                                ...node.data,
+
+                                executionState:
+                                    "error"
+                            }
+                        }
+                        : node
+            )
+    )
+}
                             }
                         }
                     )
