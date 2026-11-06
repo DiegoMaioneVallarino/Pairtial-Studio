@@ -1,3 +1,4 @@
+
 import "./TopBar.css"
 
 
@@ -6,14 +7,17 @@ type TopBarProps = {
     isRunning: boolean
 
     onExecute: () => void
-
+    onStop: () => void
+    onReset: () => void
 }
 
 
 export function TopBar({
     projectName,
     isRunning,
-    onExecute
+    onExecute,
+    onStop,
+    onReset
 }: TopBarProps) {
 
     return (
@@ -82,29 +86,49 @@ export function TopBar({
 
             <div className="top-bar-actions">
 
+                {/* RUN / STOP */}
+
                 <button
-    className={
-        isRunning
-            ? "top-run-button running"
-            : "top-run-button"
-    }
-
-    onClick={onExecute}
-
-    disabled={isRunning}
->
-
+                    className={
+                        isRunning
+                            ? "top-run-button running"
+                            : "top-run-button"
+                    }
+                    onClick={
+                        isRunning
+                            ? onStop
+                            : onExecute
+                    }
+                    title={
+                        isRunning
+                            ? "Detener ejecución"
+                            : "Ejecutar sistema"
+                    }
+                >
                     <span className="top-run-icon">
                         {isRunning ? "■" : "▷"}
                     </span>
 
                     {isRunning
-                        ? "Ejecutando..."
+                        ? "Detener"
                         : "Ejecutar"
                     }
-
                 </button>
 
+
+                {/* RESET */}
+
+                <button
+                    className="top-icon-button"
+                    title="Reiniciar ejecución"
+                    onClick={onReset}
+                    disabled={isRunning}
+                >
+                    ↺
+                </button>
+
+
+                {/* TOOLS */}
 
                 <div className="top-tools">
 
@@ -125,6 +149,8 @@ export function TopBar({
                 </div>
 
 
+                {/* DEPLOY */}
+
                 <button className="top-deploy-button">
 
                     <span>
@@ -135,6 +161,8 @@ export function TopBar({
 
                 </button>
 
+
+                {/* USER */}
 
                 <button className="top-user-button">
 

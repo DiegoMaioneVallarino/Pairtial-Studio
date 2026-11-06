@@ -5,13 +5,16 @@ import {
 import type {
     NodeExecutor
 } from "./executor.types"
-
+import {
+    abortableDelay
+} from "../runtime/abortableDelay"
 
 export const agentExecutor: NodeExecutor =
-    async ({
-        node,
-        inputs
-    }) => {
+  async ({
+    node,
+    inputs,
+    context
+}) => {
 
         const startedAt =
             performance.now()
@@ -30,15 +33,10 @@ export const agentExecutor: NodeExecutor =
          * etc.
          */
 
-        await new Promise<void>(
-            resolve => {
-                setTimeout(
-                    resolve,
-                    500
-                )
-            }
-        )
-
+       await abortableDelay(
+    500,
+    context.signal
+)
 
         const inputPayloads =
             inputs.map(

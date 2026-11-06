@@ -10,8 +10,8 @@ import type {
 
 export type ExecutorContext = {
     runId: string
-
     system: PairtialSystem
+    signal: AbortSignal
 }
 
 

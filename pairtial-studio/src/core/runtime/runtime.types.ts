@@ -45,7 +45,11 @@ export type RuntimeEvent =
         type: "run.completed"
         runId: string
         timestamp: number
-    }
+    }| {
+    type: "run.cancelled"
+    runId: string
+    timestamp: number
+}
     | {
         type: "run.failed"
         runId: string
@@ -86,4 +90,5 @@ export type RuntimeEventListener = (
 
 export type RuntimeOptions = {
     onEvent?: RuntimeEventListener
+    signal?: AbortSignal
 }
