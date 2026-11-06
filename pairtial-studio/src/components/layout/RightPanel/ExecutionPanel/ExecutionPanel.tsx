@@ -41,6 +41,12 @@ export function ExecutionPanel({
         )
 
 
+const inputEvents =
+    nodeEvents.filter(
+        event =>
+            event.type === "envelope.received"
+    )
+
     const startedEvent =
         nodeEvents.find(
             event =>
@@ -160,6 +166,40 @@ export function ExecutionPanel({
                 </div>
 
             </div>
+
+<section className="execution-section">
+
+    <h4>Input Envelopes</h4>
+
+    {inputEvents.length === 0 ? (
+        <div className="execution-muted">
+            No input envelopes
+        </div>
+    ) : (
+        inputEvents.map(event => (
+            <div
+                key={event.envelope.id}
+                className="execution-input"
+            >
+                <div className="execution-input-header">
+                    <span>Source</span>
+                    <code>
+                        {event.envelope.sourceNodeId}
+                    </code>
+                </div>
+
+                <pre className="execution-payload">
+                    {JSON.stringify(
+                        event.envelope.payload,
+                        null,
+                        2
+                    )}
+                </pre>
+            </div>
+        ))
+    )}
+
+</section>
 
 
             <section className="execution-section">

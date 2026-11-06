@@ -202,6 +202,16 @@ export async function runSystem(
                 )
 
 
+for (const envelope of inputs) {
+    emit({
+        type: "envelope.received",
+        runId,
+        nodeId: node.id,
+        timestamp: Date.now(),
+        envelope
+    })
+}
+
             try {
 
                 const executor =

@@ -52,6 +52,15 @@ export type RuntimeEvent =
         timestamp: number
         error: string
     }
+    
+| {
+    type: "envelope.received"
+    runId: string
+    nodeId: string
+    timestamp: number
+    envelope: Envelope
+}
+
 
 
 export type NodeExecutionStates =

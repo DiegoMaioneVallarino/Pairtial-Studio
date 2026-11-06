@@ -214,3 +214,29 @@
 .execution-event-node-failed {
     background: #ff7070;
 }
+.execution-input {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.execution-input-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 11px;
+}
+
+.execution-input-header span {
+    color: #7f8998;
+}
+
+.execution-input-header code {
+    color: #c6cfdb;
+}
+
+.execution-event-envelope-received {
+    background: #f0b96b;
+}
