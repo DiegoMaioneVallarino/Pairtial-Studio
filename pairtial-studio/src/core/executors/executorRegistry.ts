@@ -1,3 +1,4 @@
+
 import type {
     NodeKind
 } from "../types/types"
@@ -18,6 +19,18 @@ import {
     qualityExecutor
 } from "./qualityExecutor"
 
+import {
+    engineerExecutor
+} from "./engineerExecutor"
+
+import {
+    supervisorExecutor
+} from "./supervisorExecutor"
+
+import {
+    hrExecutor
+} from "./hrExecutor"
+
 
 const executors:
     Partial<Record<NodeKind, NodeExecutor>> = {
@@ -29,7 +42,16 @@ const executors:
             apiExecutor,
 
         quality:
-            qualityExecutor
+            qualityExecutor,
+
+        engineer:
+            engineerExecutor,
+
+        supervisor:
+            supervisorExecutor,
+
+        hr:
+            hrExecutor
     }
 
 
@@ -40,13 +62,11 @@ export function getExecutor(
     const executor =
         executors[kind]
 
-
     if (!executor) {
         throw new Error(
             `No executor registered for node kind "${kind}"`
         )
     }
-
 
     return executor
 }

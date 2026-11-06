@@ -787,14 +787,17 @@ if (
 
 
                 <RightPanel
-                    selectedPanel="properties"
-                    selectedNode={
-                        selectedNode
-                    }
-                    onUpdateNode={
-                        updateSelectedNodeData
-                    }
-                />
+    selectedPanel="properties"
+    selectedNode={
+        selectedNode
+    }
+    runtimeEvents={
+        runtimeEvents
+    }
+    onUpdateNode={
+        updateSelectedNodeData
+    }
+/>
 
             </div>
 

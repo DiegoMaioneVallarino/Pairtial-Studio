@@ -3,12 +3,14 @@ import "./LeftBar.css"
 
 export type LeftBarButtonsTypes =
     | "agent"
+    | "db"
     | "api"
     | "fabrics"
     | "quality"
     | "engineer"
     | "supervisor"
     | "hr"
+    | "king"
 
 
 type LeftBarProps = {
@@ -17,7 +19,10 @@ type LeftBarProps = {
         LeftBarButtonsTypes | null
 
     onSelectButton:
-        (button: LeftBarButtonsTypes | null) => void
+        (
+            button:
+                LeftBarButtonsTypes | null
+        ) => void
 
 }
 
@@ -34,18 +39,14 @@ function LeftBar({
         button: LeftBarButtonsTypes
     ) {
 
-        /*
-            Si vuelves a pulsar el botón seleccionado,
-            regresamos al modo normal.
-        */
-
-        if (selectedButton === button) {
+        if (
+            selectedButton === button
+        ) {
 
             onSelectButton(null)
 
             return
         }
-
 
         onSelectButton(button)
     }
@@ -58,109 +59,199 @@ function LeftBar({
             <div className="LeftBarInner">
 
 
-                {/* AGENT */}
+                {/* LLM */}
 
-<div
-    className={`tools-bt ${
-        selectedButton === "agent"
-            ? "select"
-            : ""
-    }`}
-    id="tool-agent"
-    onClick={() =>
-        handleButtonClick("agent")
-    }
-/>
-
-
-{/* API */}
-
-<div
-    className={`tools-bt ${
-        selectedButton === "api"
-            ? "select"
-            : ""
-    }`}
-    id="tool-api"
-    onClick={() =>
-        handleButtonClick("api")
-    }
-/>
+                <div
+                    className={`tools-bt ${
+                        selectedButton === "agent"
+                            ? "select"
+                            : ""
+                    }`}
+                    id="tool-agent"
+                    onClick={() =>
+                        handleButtonClick("agent")
+                    }
+                    title="LLM"
+                >
+                    <img
+                        src="/icons/llm_bt.png"
+                        alt=""
+                    />
+                </div>
 
 
-{/* FABRIC */}
+                {/* QUALITY / VISION */}
 
-<div
-    className={`tools-bt ${
-        selectedButton === "fabrics"
-            ? "select"
-            : ""
-    }`}
-    id="tool-fabrics"
-    onClick={() =>
-        handleButtonClick("fabrics")
-    }
-/>
-
-
-{/* QUALITY */}
-
-<div
-    className={`tools-bt ${
-        selectedButton === "quality"
-            ? "select"
-            : ""
-    }`}
-    id="tool-quality"
-    onClick={() =>
-        handleButtonClick("quality")
-    }
-/>
+                <div
+                    className={`tools-bt ${
+                        selectedButton === "quality"
+                            ? "select"
+                            : ""
+                    }`}
+                    id="tool-quality"
+                    onClick={() =>
+                        handleButtonClick("quality")
+                    }
+                    title="Quality Test"
+                >
+                    <img
+                        src="/icons/vis_bt.png"
+                        alt=""
+                    />
+                </div>
 
 
-{/* ENGINEER */}
+                {/* ENGINEER */}
 
-<div
-    className={`tools-bt ${
-        selectedButton === "engineer"
-            ? "select"
-            : ""
-    }`}
-    id="tool-engineer"
-    onClick={() =>
-        handleButtonClick("engineer")
-    }
-/>
-
-
-{/* SUPERVISOR */}
-
-<div
-    className={`tools-bt ${
-        selectedButton === "supervisor"
-            ? "select"
-            : ""
-    }`}
-    id="tool-supervisor"
-    onClick={() =>
-        handleButtonClick("supervisor")
-    }
-/>
+                <div
+                    className={`tools-bt ${
+                        selectedButton === "engineer"
+                            ? "select"
+                            : ""
+                    }`}
+                    id="tool-engineer"
+                    onClick={() =>
+                        handleButtonClick("engineer")
+                    }
+                    title="Engineer"
+                >
+                    <img
+                        src="/icons/ngn_bt.png"
+                        alt=""
+                    />
+                </div>
 
 
-{/* HR */}
+                {/* SUPERVISOR */}
 
-<div
-    className={`tools-bt ${
-        selectedButton === "hr"
-            ? "select"
-            : ""
-    }`}
-    id="tool-hr"
-    onClick={() =>
-        handleButtonClick("hr")
-    }
-/>
+                <div
+                    className={`tools-bt ${
+                        selectedButton === "supervisor"
+                            ? "select"
+                            : ""
+                    }`}
+                    id="tool-supervisor"
+                    onClick={() =>
+                        handleButtonClick("supervisor")
+                    }
+                    title="Supervisor"
+                >
+                    <img
+                        src="/icons/spv_bt.png"
+                        alt=""
+                    />
+                </div>
+
+
+                {/* HUMAN RESOURCES */}
+
+                <div
+                    className={`tools-bt ${
+                        selectedButton === "hr"
+                            ? "select"
+                            : ""
+                    }`}
+                    id="tool-hr"
+                    onClick={() =>
+                        handleButtonClick("hr")
+                    }
+                    title="Human Resources"
+                >
+                    <img
+                        src="/icons/hhm_bt.png"
+                        alt=""
+                    />
+                </div>
+
+
+                <div className="tools-divider" />
+
+
+                {/* DATABASE */}
+
+                <div
+                    className={`tools-bt ${
+                        selectedButton === "db"
+                            ? "select"
+                            : ""
+                    }`}
+                    id="tool-db"
+                    onClick={() =>
+                        handleButtonClick("db")
+                    }
+                    title="Database"
+                >
+                    <img
+                        src="/icons/db_bt.png"
+                        alt=""
+                    />
+                </div>
+
+
+                {/* API */}
+
+                <div
+                    className={`tools-bt ${
+                        selectedButton === "api"
+                            ? "select"
+                            : ""
+                    }`}
+                    id="tool-api"
+                    onClick={() =>
+                        handleButtonClick("api")
+                    }
+                    title="API"
+                >
+                    <img
+                        src="/icons/api_bt.png"
+                        alt=""
+                    />
+                </div>
+
+
+                {/* FACTORY / FABRICS */}
+
+                <div
+                    className={`tools-bt ${
+                        selectedButton === "fabrics"
+                            ? "select"
+                            : ""
+                    }`}
+                    id="tool-fabrics"
+                    onClick={() =>
+                        handleButtonClick("fabrics")
+                    }
+                    title="Factory"
+                >
+                    <img
+                        src="/icons/fact_bt.png"
+                        alt=""
+                    />
+                </div>
+
+
+                <div className="tools-spacer" />
+
+
+                {/* KING */}
+
+                <div
+                    className={`tools-bt ${
+                        selectedButton === "king"
+                            ? "select"
+                            : ""
+                    }`}
+                    id="tool-king"
+                    onClick={() =>
+                        handleButtonClick("king")
+                    }
+                    title="King"
+                >
+                    <img
+                        src="/icons/king_bt.png"
+                        alt=""
+                    />
+                </div>
 
 
             </div>

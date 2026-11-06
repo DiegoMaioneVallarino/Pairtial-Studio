@@ -21,29 +21,36 @@ import {
 } from "./SystemsPanel/SystemsPanel"
 
 
+import ExecutionPanel from "./ExecutionPanel/ExecutionPanel"
+
+import type {
+    RuntimeEvent
+} from "../../../core/runtime/runtime.types"
+
 type RightPanelTab =
     | "systems"
     | "fabrics"
     | "properties"
-
+    | "execution"
 
 type RightPanelProps = {
-
     selectedPanel?: RightPanelTab
 
-    selectedNode:
-        Node | null
+    selectedNode: Node | null
+
+    runtimeEvents:
+        RuntimeEvent[]
 
     onUpdateNode: (
         data: Record<string, unknown>
     ) => void
-
 }
 
 
-export default function RightPanel({
-    selectedPanel = "systems",
+export function RightPanel({
+    selectedPanel,
     selectedNode,
+    runtimeEvents,
     onUpdateNode
 }: RightPanelProps) {
 
@@ -51,7 +58,7 @@ export default function RightPanel({
         currentPanel,
         setCurrentPanel
     ] = useState<RightPanelTab>(
-        selectedPanel
+        selectedPanel ?? "properties"
     )
 
 
@@ -136,7 +143,28 @@ export default function RightPanel({
                                     Propiedades
                                 </span>
                             </button>
+                        <button
+                            className={
+                                `right-panelIn-btn ${
+                                    currentPanel === "execution"
+                                        ? "selected"
+                                        : ""
+                                }`
+                            }
+                            onClick={() =>
+                                setCurrentPanel(
+                                    "execution"
+                                )
+                            }
+                        >
+                            <span className="right-panelIn-btn-icon">
+                                ▶
+                            </span>
 
+                            <span>
+                                Ejecución
+                            </span>
+                        </button>
                         </div>
 
 
@@ -191,3 +219,5 @@ export default function RightPanel({
         </aside>
     )
 }
+
+export default RightPanel

@@ -21,6 +21,8 @@ div#LeftBar {
     margin: auto;
     border-radius: 14px;
     margin-top: 10px;
+        align-items: center;
+    display: grid;
 }.tools-bt {
     cursor: pointer;
 }
@@ -35,3 +37,42 @@ div#LeftBar {
         inset 0 0 0 1px
         rgba(90, 120, 255, 0.12);
 }
+
+.tools-bt img {
+    width: 26px;
+    height: 26px;
+
+    display: block;
+
+    object-fit: contain;
+
+    pointer-events: none;
+
+    user-select: none;
+        margin: auto;
+}
+
+.tools-bt {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tools-bt img {
+    width: 28px;
+    height: 28px;
+
+    object-fit: contain;
+
+    display: block;
+
+    pointer-events: none;
+    user-select: none;
+}
+
+
+
+.tools-spacer {
+    flex: 1;
+}
+
