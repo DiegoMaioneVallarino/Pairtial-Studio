@@ -1,4 +1,5 @@
-import { withMockConfig } from "./mockExecutor"
+import { withSimulation } from "./simulation"
+import { withResilience } from "./resilience"
 import { databaseExecutor } from "./databaseExecutor"
 import { kingExecutor } from "./kingExecutor"
 
@@ -60,6 +61,20 @@ const executors:
     }
 
 
+/**
+ * ¿Este nodo es simulado? Solo entonces se le aplican latencia, fallos y costes
+ * ficticios. Agent y Quality (modo llm) dependen del proveedor; Quality
+ * heurístico es cálculo real e instantáneo.
+ */
+export function isSimulated(kind: NodeKind, config: Record<string, unknown>): boolean {
+    if (kind === "agent") return config.provider === "mock"
+    if (kind === "quality") {
+        if (config.mode === "heuristic") return false
+        if (config.mode === "llm") return config.provider === "mock"
+    }
+    return true
+}
+
 export function getExecutor(
     kind: NodeKind
 ): NodeExecutor {
@@ -73,5 +88,5 @@ export function getExecutor(
         )
     }
 
-    return withMockConfig(executor)
+    return withResilience(withSimulation(executor, isSimulated))
 }

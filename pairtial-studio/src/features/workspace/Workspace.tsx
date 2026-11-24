@@ -1,4 +1,6 @@
 import { connectionError } from "../../core/ports/portRegistry"
+import { DEFAULT_FEEDBACK, wouldCreateCycle } from "../../core/graph/loops"
+import type { FeedbackConfig } from "../../core/types/types"
 import "./Workspace.css"
 
 import {
@@ -401,6 +403,11 @@ const system = {
                                         ...edge, data: {...edge.data, routeState: event.active ? "taken" : "skipped", active: event.active, pulse: event.active ? Date.now() : undefined}
                                     } : edge))
                                 }
+                                if (event.type === "loop.iterated") {
+                                    // El cuerpo del bucle vuelve a ejecutarse: sus nodos quedan en espera.
+                                    const body = new Set(event.nodeIds)
+                                    setNodes(items => items.map(node => body.has(node.id) ? {...node, data: {...node.data, executionState: "waiting"}} : node))
+                                }
                                 if (event.type === "node.skipped") {
                                     setNodes(items => items.map(node => node.id === event.nodeId ? {...node, data: {...node.data, executionState: "skipped"}} : node))
                                 }
@@ -538,17 +545,33 @@ if (
 
                 if (!isValidConnection(connection)) return
                 setEdges(
-                    currentEdges =>
-                        addEdge(
+                    currentEdges => {
+                        // Si la conexión cierra un ciclo, se crea como retroalimentación (bucle acotado).
+                        const closesCycle = wouldCreateCycle(
+                            currentEdges.map(e => ({
+                                sourceNodeId: e.source,
+                                targetNodeId: e.target,
+                                feedback: (e.data as { feedback?: FeedbackConfig } | undefined)?.feedback
+                            })),
+                            connection.source,
+                            connection.target
+                        )
+                        return addEdge(
                             {
                                 ...connection,
 
                                 type:
-                                   "execution"
+                                   "execution",
+
+                                data:
+                                    closesCycle
+                                        ? { feedback: DEFAULT_FEEDBACK }
+                                        : undefined
                             },
 
                             currentEdges
                         )
+                    }
                 )
 
             },

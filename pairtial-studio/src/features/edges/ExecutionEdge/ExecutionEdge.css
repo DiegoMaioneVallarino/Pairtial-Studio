@@ -58,3 +58,6 @@
 }
 .execution-edge-skipped { opacity: .3; stroke-dasharray: 5 5; }
 .execution-edge-taken { stroke: #72b8ff; }
+
+/* Retroalimentación (bucle): trazo a guiones, distinto del "omitido" que además baja la opacidad. */
+.execution-edge-feedback { stroke-dasharray: 8 4; }

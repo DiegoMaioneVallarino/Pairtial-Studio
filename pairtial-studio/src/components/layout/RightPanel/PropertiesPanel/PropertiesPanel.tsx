@@ -1,7 +1,7 @@
 import "./PropertiesPanel.css"
 import type { Node } from "@xyflow/react"
 import type { NodeKind } from "../../../../core/types/types"
-import { nodeFields, simulationFields, getConfig } from "../../../../core/config/nodeConfig"
+import { nodeFields, simulationFields, resilienceFields, getConfig } from "../../../../core/config/nodeConfig"
 import type { Field } from "../../../../core/config/nodeConfig"
 
 type PropertiesPanelProps = { node: Node | null; onUpdate: (data: Record<string, unknown>) => void }
@@ -25,8 +25,10 @@ export function PropertiesPanel({node, onUpdate}: PropertiesPanelProps) {
    <div className="properties-field"><label htmlFor="node-description">Descripción</label><textarea id="node-description" rows={3} value={String(node.data.description ?? "")} onChange={e=>onUpdate({description:e.target.value})}/></div>
    <h4>Configuración del nodo</h4>
    {(nodeFields[kind] ?? []).map(renderField)}
+   <h4>Resiliencia</h4>
+   {resilienceFields().map(renderField)}
    <h4>Simulación local</h4>
-   <small>Sin llamadas externas. Tokens y costes son ficticios.</small>
+   <small>Solo se aplica a nodos simulados (proveedor mock). Tokens y costes son ficticios.</small>
    {simulationFields(kind).map(renderField)}
   </div>
  </aside>

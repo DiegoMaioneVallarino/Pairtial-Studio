@@ -4,6 +4,7 @@ import type {
 } from "@xyflow/react"
 
 import type {
+    FeedbackConfig,
     NodeKind,
     PairtialEdge,
     PairtialNode,
@@ -79,7 +80,10 @@ export function reactFlowToPairtialSystem(
 
             targetPortId:
                 edge.targetHandle ??
-                undefined
+                undefined,
+
+            feedback:
+                (edge.data as { feedback?: FeedbackConfig } | undefined)?.feedback
         }))
 
 

@@ -32,6 +32,19 @@ export type PairtialNode = {
 }
 
 
+/**
+ * Una arista de retroalimentación vuelve a un nodo anterior (ciclo acotado).
+ * No cuenta como dependencia: el runtime re-ejecuta el "cuerpo" del bucle
+ * (los nodos entre destino y origen) hasta `maxIterations` veces.
+ */
+export type FeedbackConfig = {
+    /** Máximo de re-ejecuciones del cuerpo del bucle (1..50). */
+    maxIterations: number
+    /** Qué hacer si se agotan las iteraciones y la arista sigue activa. */
+    onExhausted: "fail" | "continue"
+}
+
+
 export type PairtialEdge = {
     id: string
 
@@ -40,6 +53,8 @@ export type PairtialEdge = {
 
     sourcePortId?: string
     targetPortId?: string
+
+    feedback?: FeedbackConfig
 }
 
 

@@ -64,7 +64,12 @@ export function pairtialSystemToReactFlow(
                     edge.targetPortId ?? "input",
 
                 type:
-                    "execution"
+                    "execution",
+
+                data:
+                    edge.feedback
+                        ? { feedback: edge.feedback }
+                        : undefined
 
             })
         )
