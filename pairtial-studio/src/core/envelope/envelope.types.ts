@@ -12,6 +12,9 @@ export type Envelope<T = unknown> = {
     createdAt: number
 
     sourceNodeId: string
+    sourcePortId?: string
+    targetPortId?: string
+    edgeId?: string
 
     payload: T
 

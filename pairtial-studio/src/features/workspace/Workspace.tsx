@@ -1,3 +1,4 @@
+import { connectionError } from "../../core/ports/portRegistry"
 import "./Workspace.css"
 
 import {
@@ -570,6 +571,12 @@ if (
     ])
 
 
+    const isValidConnection = useCallback((connection: Connection | Edge) => {
+        const source = nodes.find(n => n.id === connection.source)
+        const target = nodes.find(n => n.id === connection.target)
+        return !!source && !!target && source.id !== target.id && !connectionError(source.type ?? "", target.type ?? "", connection.sourceHandle, connection.targetHandle)
+    }, [nodes])
+
     const onConnect =
         useCallback(
 
@@ -578,6 +585,7 @@ if (
                     Connection
             ) => {
 
+                if (!isValidConnection(connection)) return
                 setEdges(
                     currentEdges =>
                         addEdge(
@@ -595,7 +603,7 @@ if (
             },
 
             [
-                setEdges
+                setEdges, isValidConnection
             ]
         )
 
@@ -787,6 +795,7 @@ if (
                                 onEdgesChange
                             }
 
+                            isValidConnection={isValidConnection}
                             onConnect={
                                 onConnect
                             }

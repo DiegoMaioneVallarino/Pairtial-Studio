@@ -58,10 +58,10 @@ export function pairtialSystemToReactFlow(
                     edge.targetNodeId,
 
                 sourceHandle:
-                    edge.sourcePortId,
+                    edge.sourcePortId ?? "output",
 
                 targetHandle:
-                    edge.targetPortId,
+                    edge.targetPortId ?? "input",
 
                 type:
                     "execution"

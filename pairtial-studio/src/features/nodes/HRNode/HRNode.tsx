@@ -18,7 +18,7 @@ export default function HRNode({
 
 
     return (
-        <AgentShell executionState={data.executionState as NodeExecutionState | undefined}
+        <AgentShell kind="hr" executionState={data.executionState as NodeExecutionState | undefined}
             name={node.name}
             description={node.description}
             color="pink"

@@ -180,13 +180,13 @@ const inputEvents =
     ) : (
         inputEvents.map(event => (
             <div
-                key={event.envelope.id}
+                key={`${event.envelope.id}:${event.envelope.edgeId ?? ""}`}
                 className="execution-input"
             >
                 <div className="execution-input-header">
                     <span>Source</span>
                     <code>
-                        {event.envelope.sourceNodeId}
+                        {event.envelope.sourceNodeId}:{event.envelope.sourcePortId ?? "output"} → {event.envelope.targetPortId ?? "input"}
                     </code>
                 </div>
 

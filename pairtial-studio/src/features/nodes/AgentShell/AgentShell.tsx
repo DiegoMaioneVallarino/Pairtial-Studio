@@ -1,3 +1,4 @@
+import { getPorts } from "../../../core/ports/portRegistry"
 import "./AgentShell.css"
 
 import type {
@@ -24,6 +25,7 @@ export type AgentColor =
 
 type AgentShellProps = {
 
+    kind: string
     name: string
 
     description: string
@@ -39,6 +41,7 @@ type AgentShellProps = {
 
 export default function AgentShell({
 
+    kind,
     name,
     description,
     color,
@@ -47,6 +50,7 @@ export default function AgentShell({
 
 }: AgentShellProps) {
 
+    const ports = getPorts(kind)
     return (
 
         <div
@@ -55,11 +59,14 @@ export default function AgentShell({
             }
         >
 
-            <Handle
-                type="target"
-                position={Position.Left}
-                className="agent-connection agent-input"
-            />
+            {ports.inputs.map((port, index) => (
+                <Handle key={port.id} id={port.id} type="target"
+                    position={Position.Left}
+                    title={`${port.label} (${port.type})`}
+                    className="agent-connection agent-input typed-port"
+                    style={{top: 74 + (index - (ports.inputs.length - 1)/2)*22}}
+                />
+            ))}
 
 
             <div className="agent-robot">
@@ -113,11 +120,14 @@ export default function AgentShell({
             </div>
 
 
-            <Handle
-                type="source"
-                position={Position.Right}
-                className="agent-connection agent-output"
-            />
+            {ports.outputs.map((port, index) => (
+                <Handle key={port.id} id={port.id} type="source"
+                    position={Position.Right}
+                    title={`${port.label} (${port.type})`}
+                    className="agent-connection agent-output typed-port"
+                    style={{top: 74 + (index - (ports.outputs.length - 1)/2)*22}}
+                />
+            ))}
 
         </div>
 

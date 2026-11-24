@@ -32,7 +32,7 @@ function AgentNode({
 
     return (
 
-        <AgentShell
+        <AgentShell kind="agent"
 
             name={
                 agent.name

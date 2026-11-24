@@ -18,7 +18,7 @@ export default function ApiNode({
 
 
     return (
-        <AgentShell executionState={data.executionState as NodeExecutionState | undefined}
+        <AgentShell kind="api" executionState={data.executionState as NodeExecutionState | undefined}
             name={node.name}
             description={node.description}
             color="yellow"

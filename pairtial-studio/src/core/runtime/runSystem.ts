@@ -173,22 +173,11 @@ export async function runSystem(
                         edge.targetNodeId === node.id
                 )
 
-            const sourceNodeIds =
-                new Set(
-                    incomingEdges.map(
-                        edge => edge.sourceNodeId
-                    )
-                )
-
-            // Recuperar Envelopes de entrada.
-
-            const inputs =
-                envelopes.filter(
-                    envelope =>
-                        sourceNodeIds.has(
-                            envelope.sourceNodeId
-                        )
-                )
+            const inputs = incomingEdges.flatMap(edge => {
+                const sourcePortId = edge.sourcePortId ?? "output"
+                return envelopes.filter(e => e.sourceNodeId === edge.sourceNodeId && (e.sourcePortId ?? "output") === sourcePortId)
+                    .map(e => ({...e, sourcePortId, targetPortId: edge.targetPortId ?? "input", edgeId: edge.id}))
+            })
 
             for (const envelope of inputs) {
 
@@ -222,7 +211,14 @@ export async function runSystem(
 
                 signal.throwIfAborted()
 
+                output.sourcePortId = "output"
                 envelopes.push(output)
+                if (node.kind === "quality") {
+                    const score = (output.payload as {score: number}).score
+                    const scoreEnvelope: Envelope = { id: crypto.randomUUID(), createdAt: Date.now(), sourceNodeId: node.id, sourcePortId: "score", payload: score }
+                    envelopes.push(scoreEnvelope)
+                    emit({type: "envelope.created", runId, nodeId: node.id, timestamp: Date.now(), envelope: scoreEnvelope})
+                }
 
                 emit({
                     type: "envelope.created",

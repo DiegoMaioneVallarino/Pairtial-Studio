@@ -1,3 +1,4 @@
+import { connectionError } from "../ports/portRegistry"
 import type {
     PairtialSystem
 } from "../types/types"
@@ -59,6 +60,13 @@ export function validateGraph(
             )
         }
 
+
+        const source = system.nodes.find(n => n.id === edge.sourceNodeId)
+        const target = system.nodes.find(n => n.id === edge.targetNodeId)
+        if (source && target) {
+            const error = connectionError(source.kind, target.kind, edge.sourcePortId, edge.targetPortId)
+            if (error) errors.push(`Edge "${edge.id}": ${error}`)
+        }
 
         if (
             edge.sourceNodeId ===

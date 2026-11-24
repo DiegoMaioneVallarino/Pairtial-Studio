@@ -18,7 +18,7 @@ export default function QualityNode({
 
 
     return (
-        <AgentShell executionState={data.executionState as NodeExecutionState | undefined}
+        <AgentShell kind="quality" executionState={data.executionState as NodeExecutionState | undefined}
             name={node.name}
             description={node.description}
             color="red"

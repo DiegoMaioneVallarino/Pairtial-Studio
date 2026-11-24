@@ -18,7 +18,7 @@ export default function SupervisorNode({
 
 
     return (
-        <AgentShell executionState={data.executionState as NodeExecutionState | undefined}
+        <AgentShell kind="supervisor" executionState={data.executionState as NodeExecutionState | undefined}
             name={node.name}
             description={node.description}
             color="blue"
