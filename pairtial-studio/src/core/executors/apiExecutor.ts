@@ -1,4 +1,3 @@
-import { abortableDelay } from "../runtime/abortableDelay"
 import {
     createEnvelope
 } from "../envelope/createEnvelope"
@@ -11,15 +10,14 @@ import type {
 export const apiExecutor: NodeExecutor =
     async ({
         node,
-        inputs,
-        context
+        inputs
     }) => {
 
         const startedAt =
             performance.now()
 
 
-        await abortableDelay(350, context.signal)
+        
 
 
         const durationMs =
@@ -32,7 +30,9 @@ export const apiExecutor: NodeExecutor =
                 node.id,
 
             payload: {
-                status: 200,
+                status: node.config.status,
+                url: node.config.url, method: node.config.method, headers: JSON.parse(String(node.config.headers)),
+                response: node.config.response ? JSON.parse(String(node.config.response)) : null,
 
                 data: {
                     message:

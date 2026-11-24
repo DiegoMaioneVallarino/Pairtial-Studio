@@ -1,5 +1,3 @@
-import { abortableDelay } from "../runtime/abortableDelay"
-
 import {
     createEnvelope
 } from "../envelope/createEnvelope"
@@ -12,13 +10,12 @@ import type {
 export const hrExecutor: NodeExecutor =
     async ({
         node,
-        inputs,
-        context
+        inputs
     }) => {
 
         const startedAt = performance.now()
 
-        await abortableDelay(450, context.signal)
+        
 
         const received = inputs.map(
             envelope => envelope.payload
@@ -31,9 +28,9 @@ export const hrExecutor: NodeExecutor =
                 type: "human-resources",
 
                 recommendation: {
-                    role: "engineer",
+                    role: node.config.role,
                     reason:
-                        "Especialista recomendado para tareas técnicas (simulado)"
+                        node.config.reason
                 },
 
                 received

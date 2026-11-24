@@ -1,5 +1,3 @@
-import { abortableDelay } from "../runtime/abortableDelay"
-
 import {
     createEnvelope
 } from "../envelope/createEnvelope"
@@ -12,13 +10,12 @@ import type {
 export const supervisorExecutor: NodeExecutor =
     async ({
         node,
-        inputs,
-        context
+        inputs
     }) => {
 
         const startedAt = performance.now()
 
-        await abortableDelay(400, context.signal)
+        
 
         const received = inputs.map(
             envelope => envelope.payload
@@ -30,10 +27,11 @@ export const supervisorExecutor: NodeExecutor =
             payload: {
                 type: "supervision",
 
-                decision: "approved",
+                decision: node.config.strategy === "quality" ? (received.some(p => typeof p === "object" && p !== null && "passed" in p && p.passed === false) ? "revise" : received.some(p => typeof p === "object" && p !== null && "passed" in p && p.passed === true) ? "approved" : "revise") : node.config.decision,
+                rules: node.config.rules, strategy: node.config.strategy,
 
                 message:
-                    "Resultado aprobado por Supervisor (simulado)",
+                    "Evaluación de Supervisor (simulada)",
 
                 inspectedEnvelopes:
                     inputs.map(envelope => envelope.id),

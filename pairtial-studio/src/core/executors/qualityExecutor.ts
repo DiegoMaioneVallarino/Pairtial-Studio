@@ -1,4 +1,3 @@
-import { abortableDelay } from "../runtime/abortableDelay"
 import {
     createEnvelope
 } from "../envelope/createEnvelope"
@@ -11,15 +10,14 @@ import type {
 export const qualityExecutor: NodeExecutor =
     async ({
         node,
-        inputs,
-        context
+        inputs
     }) => {
 
         const startedAt =
             performance.now()
 
 
-        await abortableDelay(250, context.signal)
+        
 
 
         const durationMs =
@@ -32,9 +30,10 @@ export const qualityExecutor: NodeExecutor =
                 node.id,
 
             payload: {
-                passed: true,
+                passed: Number(node.config.score) >= Number(node.config.threshold),
+                criteria: node.config.criteria, threshold: Number(node.config.threshold)/100,
 
-                score: 0.92,
+                score: Number(node.config.score)/100,
 
                 received:
                     inputs.map(

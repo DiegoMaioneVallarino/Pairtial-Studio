@@ -1,10 +1,9 @@
 import { createEnvelope } from "../envelope/createEnvelope"
-import { abortableDelay } from "../runtime/abortableDelay"
 import type { NodeExecutor } from "./executor.types"
 
 export const databaseExecutor: NodeExecutor = async ({ node, inputs, context }) => {
     const started = performance.now()
-    await abortableDelay(300, context.signal)
+    
     const db = context.mockDatabase
     const operation = String(node.config.operation ?? "write")
     const key = String(node.config.key ?? "result")

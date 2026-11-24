@@ -61,3 +61,8 @@
     opacity: 0.55;
 }
 .properties-field select { width:100%; padding:9px; background:#24272d; color:inherit; border:1px solid #ffffff20; border-radius:7px; }
+.Properties-panel { min-height: 0; max-height: 100%; overflow-y: auto; box-sizing: border-box; }
+.properties-section h4 { margin: 8px 0 0; font-size: 12px; border-top: 1px solid #ffffff20; padding-top: 12px; }
+.properties-section small { opacity: .65; font-size: 11px; }
+.properties-field select { background: #fff; color: #243044; border-color: #d5dbe5; box-sizing: border-box; }
+.properties-field input, .properties-field textarea { border-color: #d5dbe5; }

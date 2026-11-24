@@ -1,5 +1,3 @@
-import { abortableDelay } from "../runtime/abortableDelay"
-
 import {
     createEnvelope
 } from "../envelope/createEnvelope"
@@ -12,13 +10,12 @@ import type {
 export const engineerExecutor: NodeExecutor =
     async ({
         node,
-        inputs,
-        context
+        inputs
     }) => {
 
         const startedAt = performance.now()
 
-        await abortableDelay(700, context.signal)
+        
 
         const received = inputs.map(
             envelope => envelope.payload
@@ -33,13 +30,13 @@ export const engineerExecutor: NodeExecutor =
             payload: {
                 type: "engineering",
 
-                status: "completed",
+                status: "completed", instructions: node.config.instructions,
 
                 artifact: {
-                    kind: "code",
-                    language: "typescript",
+                    kind: node.config.artifactKind,
+                    language: node.config.language,
                     content:
-                        "// Código simulado generado por Engineer"
+                        String(node.config.content || "// Código simulado generado por Engineer")
                 },
 
                 received

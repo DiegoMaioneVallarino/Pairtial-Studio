@@ -1,3 +1,4 @@
+import { withMockConfig } from "./mockExecutor"
 import { databaseExecutor } from "./databaseExecutor"
 import { kingExecutor } from "./kingExecutor"
 
@@ -72,5 +73,5 @@ export function getExecutor(
         )
     }
 
-    return executor
+    return withMockConfig(executor)
 }

@@ -5,15 +5,10 @@ import {
 import type {
     NodeExecutor
 } from "./executor.types"
-import {
-    abortableDelay
-} from "../runtime/abortableDelay"
-
 export const agentExecutor: NodeExecutor =
   async ({
     node,
-    inputs,
-    context
+    inputs
 }) => {
 
         const startedAt =
@@ -33,10 +28,7 @@ export const agentExecutor: NodeExecutor =
          * etc.
          */
 
-       await abortableDelay(
-    500,
-    context.signal
-)
+       
 
         const inputPayloads =
             inputs.map(
@@ -58,7 +50,8 @@ export const agentExecutor: NodeExecutor =
                 type: "text",
 
                 text:
-                    `Respuesta simulada de ${node.name}`,
+                    String(node.config.response || `Respuesta simulada de ${node.name}`),
+                prompt: node.config.prompt, model: node.config.model, temperature: node.config.temperature,
 
                 received:
                     inputPayloads
