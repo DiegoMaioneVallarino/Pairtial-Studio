@@ -309,7 +309,7 @@ useEffect(() => {
         if (!resetRequest || controllerRef.current) return
         setRuntimeEvents([])
         setNodes(items => items.map(n => ({ ...n, data: { ...n.data, executionState: "idle" } })))
-        setEdges(items => items.map(e => ({ ...e, data: { ...e.data, active: false, pulse: undefined } })))
+        setEdges(items => items.map(e => ({ ...e, data: { ...e.data, active: false, pulse: undefined, routeState: undefined } })))
     }, [resetRequest, setNodes, setEdges])
 
     const selectedNode =
@@ -332,6 +332,7 @@ useEffect(() => {
         async function execute() {
             const controller = new AbortController()
             controllerRef.current = controller
+            setEdges(items => items.map(e => ({...e, data: {...e.data, routeState: undefined, active: false, pulse: undefined}})))
             setNodes(items => items.map(n => ({ ...n, data: { ...n.data, executionState: "waiting" } })))
 
             onRunningChange(true)
@@ -392,67 +393,14 @@ const system = {
                                     ]
                                 )
 
-                               if (
-    event.type ===
-    "envelope.created"
-) {
-
-    const sourceNodeId =
-        event.nodeId
-
-
-    setEdges(
-        currentEdges =>
-            currentEdges.map(
-                edge =>
-                    edge.source ===
-                    sourceNodeId
-                        ? {
-                            ...edge,
-
-                            data: {
-                                ...edge.data,
-
-                                pulse:
-                                    Date.now(),
-
-                                active:
-                                    true
-                            }
-                        }
-                        : edge
-            )
-    )
-
-
-    window.setTimeout(
-        () => {
-            if (controllerRef.current !== controller || controller.signal.aborted) return
-            setEdges(
-                currentEdges =>
-                    currentEdges.map(
-                        edge =>
-                            edge.source ===
-                            sourceNodeId
-                                ? {
-                                    ...edge,
-
-                                    data: {
-                                        ...edge.data,
-
-                                        active:
-                                            false,
-                                        pulse: undefined
-                                    }
+                                if (event.type === "edge.routed") {
+                                    setEdges(items => items.map(edge => edge.id === event.edgeId ? {
+                                        ...edge, data: {...edge.data, routeState: event.active ? "taken" : "skipped", active: event.active, pulse: event.active ? Date.now() : undefined}
+                                    } : edge))
                                 }
-                                : edge
-                    )
-            )
-
-        },
-        600
-    )
-}
+                                if (event.type === "node.skipped") {
+                                    setNodes(items => items.map(node => node.id === event.nodeId ? {...node, data: {...node.data, executionState: "skipped"}} : node))
+                                }
 
 if (
     event.type ===

@@ -9,6 +9,8 @@ import type {
 
 
 export type RuntimeEvent =
+    | { type: "node.skipped"; runId: string; nodeId: string; timestamp: number; reason: string }
+    | { type: "edge.routed"; runId: string; nodeId: string; edgeId: string; timestamp: number; active: boolean }
     | {
         type: "run.started"
         runId: string

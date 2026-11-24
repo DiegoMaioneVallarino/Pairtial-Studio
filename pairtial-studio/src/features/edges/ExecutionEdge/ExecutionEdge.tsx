@@ -8,6 +8,7 @@ import {
 
 
 type ExecutionEdgeData = {
+    routeState?: "taken" | "skipped"
     pulse?: number
     active?: boolean
 
@@ -52,9 +53,9 @@ export default function ExecutionEdge({
     markerEnd={markerEnd}
     style={style}
     className={
-    edgeData?.active
+    edgeData?.routeState === "skipped" ? "execution-edge-path execution-edge-skipped" : edgeData?.active
         ? "execution-edge-path execution-edge-active"
-        : "execution-edge-path"
+        : edgeData?.routeState === "taken" ? "execution-edge-path execution-edge-taken" : "execution-edge-path"
 }
 />
 

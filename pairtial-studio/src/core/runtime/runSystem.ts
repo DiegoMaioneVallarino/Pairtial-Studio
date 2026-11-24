@@ -1,3 +1,4 @@
+import { conditionalPort } from "./decisionEngine"
 
 import type {
     Envelope
@@ -156,15 +157,6 @@ export async function runSystem(
 
             signal.throwIfAborted()
 
-            nodeStates[node.id] = "running"
-
-            emit({
-                type: "node.started",
-                runId,
-                nodeId: node.id,
-                timestamp: Date.now()
-            })
-
             // Buscar conexiones entrantes.
 
             const incomingEdges =
@@ -177,6 +169,26 @@ export async function runSystem(
                 const sourcePortId = edge.sourcePortId ?? "output"
                 return envelopes.filter(e => e.sourceNodeId === edge.sourceNodeId && (e.sourcePortId ?? "output") === sourcePortId)
                     .map(e => ({...e, sourcePortId, targetPortId: edge.targetPortId ?? "input", edgeId: edge.id}))
+            })
+
+            // A join runs once when at least one incoming route delivers data.
+            for (const edge of incomingEdges) {
+                emit({type: "edge.routed", runId, nodeId: node.id, edgeId: edge.id,
+                    timestamp: Date.now(), active: inputs.some(input => input.edgeId === edge.id)})
+            }
+            if (incomingEdges.length > 0 && inputs.length === 0) {
+                nodeStates[node.id] = "skipped"
+                emit({type: "node.skipped", runId, nodeId: node.id, timestamp: Date.now(), reason: "No active incoming route"})
+                continue
+            }
+
+            nodeStates[node.id] = "running"
+
+            emit({
+                type: "node.started",
+                runId,
+                nodeId: node.id,
+                timestamp: Date.now()
             })
 
             for (const envelope of inputs) {
@@ -213,6 +225,12 @@ export async function runSystem(
 
                 output.sourcePortId = "output"
                 envelopes.push(output)
+                const branch = conditionalPort(node.kind, output)
+                if (branch) {
+                    const routed: Envelope = {...output, id: crypto.randomUUID(), sourcePortId: branch, metadata: undefined}
+                    envelopes.push(routed)
+                    emit({type: "envelope.created", runId, nodeId: node.id, timestamp: Date.now(), envelope: routed})
+                }
                 if (node.kind === "quality") {
                     const score = (output.payload as {score: number}).score
                     const scoreEnvelope: Envelope = { id: crypto.randomUUID(), createdAt: Date.now(), sourceNodeId: node.id, sourcePortId: "score", payload: score }

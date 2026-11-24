@@ -418,6 +418,8 @@ function getEventClass(
         case "run.started":
             return "input"
 
+        case "node.skipped":
+        case "edge.routed":
         case "node.started":
             return "api"
 
@@ -496,6 +498,10 @@ function getEventMessage(
         case "run.failed":
             return `Ejecución fallida: ${event.error}`
 
+        case "node.skipped":
+            return `Nodo ${event.nodeId} omitido: ${event.reason}`
+        case "edge.routed":
+            return `Ruta ${event.edgeId}: ${event.active ? "activa" : "omitida"}`
         case "node.started":
             return `Ejecutando ${event.nodeId}`
 

@@ -93,6 +93,8 @@ const inputEvents =
 
     if (startedEvent && !completedEvent && events.some(event => event.runId === startedEvent.runId && event.type === "run.cancelled")) status = "cancelled"
 
+    if (nodeEvents.some(event => event.type === "node.skipped")) status = "skipped"
+
     const duration =
         startedEvent &&
         completedEvent

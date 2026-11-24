@@ -62,3 +62,4 @@ export type NodeExecutionState =
     | "running"
     | "success"
     | "error"
+    | "skipped"

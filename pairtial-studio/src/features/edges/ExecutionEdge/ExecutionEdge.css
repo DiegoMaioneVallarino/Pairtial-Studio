@@ -56,3 +56,5 @@
             )
         );
 }
+.execution-edge-skipped { opacity: .3; stroke-dasharray: 5 5; }
+.execution-edge-taken { stroke: #72b8ff; }

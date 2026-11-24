@@ -240,3 +240,5 @@
 .execution-event-envelope-received {
     background: #f0b96b;
 }
+
+.execution-event-node-skipped { background: #777; }
