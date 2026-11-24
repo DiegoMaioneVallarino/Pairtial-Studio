@@ -41,6 +41,7 @@ export async function runSystem(
         options.signal ??
         fallbackController.signal
 
+    const mockDatabase = new Map<string, unknown>()
     const events: RuntimeEvent[] = []
     const envelopes: Envelope[] = []
     const nodeStates: NodeExecutionStates = {}
@@ -90,6 +91,9 @@ export async function runSystem(
     }
 
     function failRun(error: unknown): RuntimeResult {
+        for (const id of Object.keys(nodeStates)) {
+            if (nodeStates[id] === "waiting" || nodeStates[id] === "running") nodeStates[id] = "idle"
+        }
 
         const message =
             error instanceof Error
@@ -211,7 +215,8 @@ export async function runSystem(
                         context: {
                             runId,
                             system,
-                            signal
+                            signal,
+                            mockDatabase
                         }
                     })
 

@@ -1,3 +1,5 @@
+import { databaseExecutor } from "./databaseExecutor"
+import { kingExecutor } from "./kingExecutor"
 
 import type {
     NodeKind
@@ -35,6 +37,8 @@ import {
 const executors:
     Partial<Record<NodeKind, NodeExecutor>> = {
 
+        db: databaseExecutor,
+        king: kingExecutor,
         agent:
             agentExecutor,
 

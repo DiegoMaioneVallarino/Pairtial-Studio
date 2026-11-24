@@ -52,6 +52,8 @@ import ApiNode from "../nodes/ApiNode/ApiNode"
 import QualityNode from "../nodes/QualityNode/QualityNode"
 import EngineerNode from "../nodes/EngineerNode/EngineerNode"
 import SupervisorNode from "../nodes/SupervisorNode/SupervisorNode"
+import DatabaseNode from "../nodes/DatabaseNode/DatabaseNode"
+import KingNode from "../nodes/KingNode/KingNode"
 import HRNode from "../nodes/HRNode/HRNode"
 
 import type {
@@ -64,6 +66,8 @@ type WorkspaceProps = {
         LeftBarButtonsTypes | null
 
     executionRequest: number
+    stopRequest: number
+    resetRequest: number
 
     onRunningChange: (
         running: boolean
@@ -72,6 +76,8 @@ type WorkspaceProps = {
 
 
 const nodeTypes = {
+    db: DatabaseNode,
+    king: KingNode,
 
     agent:
         AgentNode,
@@ -101,6 +107,8 @@ const edgeTypes = {
 }
 
 const nodeDefaults = {
+    db: { name: "Database", description: "Memoria simulada", operation: "write", key: "result", value: "" },
+    king: { name: "King", description: "Orquestación simulada", objective: "Evaluar resultados", decision: "approve" },
 
     agent: {
         name: "Agente",
@@ -138,9 +146,13 @@ const nodeDefaults = {
 function Workspace({
     selectedButton,
     executionRequest,
+    stopRequest,
+    resetRequest,
     onRunningChange
 }: WorkspaceProps) {
 
+    const controllerRef = useRef<AbortController | null>(null)
+    const lastRequest = useRef(0)
     const [
         runtimeEvents,
         setRuntimeEvents
@@ -202,6 +214,8 @@ function Workspace({
 
     useEffect(() => {
 
+    controllerRef.current?.abort()
+    setRuntimeEvents([])
     loadingSystemRef.current =
         true
 
@@ -286,6 +300,17 @@ useEffect(() => {
     updateSystemGraph
 ])
 
+    useEffect(() => {
+        if (stopRequest) controllerRef.current?.abort()
+    }, [stopRequest])
+
+    useEffect(() => {
+        if (!resetRequest || controllerRef.current) return
+        setRuntimeEvents([])
+        setNodes(items => items.map(n => ({ ...n, data: { ...n.data, executionState: "idle" } })))
+        setEdges(items => items.map(e => ({ ...e, data: { ...e.data, active: false, pulse: undefined } })))
+    }, [resetRequest, setNodes, setEdges])
+
     const selectedNode =
         nodes.find(
             node =>
@@ -296,13 +321,17 @@ useEffect(() => {
     useEffect(() => {
 
         if (
-            executionRequest === 0
+            executionRequest === 0 || executionRequest === lastRequest.current || controllerRef.current !== null
         ) {
             return
         }
 
 
+        lastRequest.current = executionRequest
         async function execute() {
+            const controller = new AbortController()
+            controllerRef.current = controller
+            setNodes(items => items.map(n => ({ ...n, data: { ...n.data, executionState: "waiting" } })))
 
             onRunningChange(true)
 
@@ -351,7 +380,9 @@ const system = {
                     await runSystem(
                         system,
                         {
+                            signal: controller.signal,
                             onEvent: event => {
+                                if (useSystemStore.getState().activeSystemId !== system.id) { controller.abort(); return }
 
                                 setRuntimeEvents(
                                     current => [
@@ -395,7 +426,7 @@ const system = {
 
     window.setTimeout(
         () => {
-
+            if (controllerRef.current !== controller || controller.signal.aborted) return
             setEdges(
                 currentEdges =>
                     currentEdges.map(
@@ -409,7 +440,8 @@ const system = {
                                         ...edge.data,
 
                                         active:
-                                            false
+                                            false,
+                                        pulse: undefined
                                     }
                                 }
                                 : edge
@@ -505,6 +537,10 @@ if (
                     )
 
 
+                if (useSystemStore.getState().activeSystemId === system.id) {
+                    setNodes(items => items.map(n => ({ ...n, data: { ...n.data, executionState: result.nodeStates[n.id] ?? "idle" } })))
+                    setEdges(items => items.map(e => ({ ...e, data: { ...e.data, active: false, pulse: undefined } })))
+                }
                 console.log(
                     "PAIRtial Runtime Result:",
                     result
@@ -519,6 +555,7 @@ if (
 
             } finally {
 
+                controllerRef.current = null
                 onRunningChange(false)
 
             }
@@ -688,11 +725,7 @@ if (
 
                     data: {
 
-                        name:
-                            defaults.name,
-
-                        description:
-                            defaults.description
+                        ...defaults
 
                     }
 

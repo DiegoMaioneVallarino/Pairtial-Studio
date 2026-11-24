@@ -26,6 +26,9 @@ const [
     setExecutionRequest
 ] = useState(0)
 
+const [stopRequest, setStopRequest] = useState(0)
+const [resetRequest, setResetRequest] = useState(0)
+
 function handleExecute() {
 
     if (isRunning) {
@@ -56,6 +59,8 @@ function handleExecute() {
     isRunning={isRunning}
 
     onExecute={handleExecute}
+    onStop={() => setStopRequest(n => n + 1)}
+    onReset={() => setResetRequest(n => n + 1)}
 />
 
 
@@ -71,6 +76,8 @@ function handleExecute() {
     selectedButton={selectedButton}
 
     executionRequest={executionRequest}
+    stopRequest={stopRequest}
+    resetRequest={resetRequest}
 
     onRunningChange={setIsRunning}
 />

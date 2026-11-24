@@ -60,3 +60,4 @@
     font-size: 13px;
     opacity: 0.55;
 }
+.properties-field select { width:100%; padding:9px; background:#24272d; color:inherit; border:1px solid #ffffff20; border-radius:7px; }

@@ -1,3 +1,4 @@
+import { abortableDelay } from "../runtime/abortableDelay"
 import {
     createEnvelope
 } from "../envelope/createEnvelope"
@@ -10,21 +11,15 @@ import type {
 export const apiExecutor: NodeExecutor =
     async ({
         node,
-        inputs
+        inputs,
+        context
     }) => {
 
         const startedAt =
             performance.now()
 
 
-        await new Promise<void>(
-            resolve => {
-                setTimeout(
-                    resolve,
-                    350
-                )
-            }
-        )
+        await abortableDelay(350, context.signal)
 
 
         const durationMs =

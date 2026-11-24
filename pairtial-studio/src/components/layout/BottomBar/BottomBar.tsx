@@ -421,6 +421,7 @@ function getEventClass(
         case "node.started":
             return "api"
 
+        case "envelope.received":
         case "envelope.created":
             return "fabric"
 
@@ -431,6 +432,7 @@ function getEventClass(
         case "run.failed":
             return "error"
 
+        case "run.cancelled":
         case "run.completed":
             return "output"
 
@@ -449,6 +451,7 @@ function getEventName(
         case "run.started":
             return "Sistema"
 
+        case "run.cancelled":
         case "run.completed":
             return "Sistema"
 
@@ -464,6 +467,7 @@ function getEventName(
         case "node.failed":
             return "Nodo"
 
+        case "envelope.received":
         case "envelope.created":
             return "Envelope"
 
@@ -482,6 +486,10 @@ function getEventMessage(
         case "run.started":
             return "Ejecución iniciada"
 
+        case "run.cancelled":
+            return "Ejecución cancelada"
+        case "envelope.received":
+            return `Envelope ${event.envelope.id} recibido por ${event.nodeId}`
         case "run.completed":
             return "Ejecución completada"
 

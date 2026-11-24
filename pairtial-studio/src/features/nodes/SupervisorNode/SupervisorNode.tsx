@@ -1,3 +1,4 @@
+import type { NodeExecutionState } from "../../../core/types/types"
 import type {
     NodeProps
 } from "@xyflow/react"
@@ -17,7 +18,7 @@ export default function SupervisorNode({
 
 
     return (
-        <AgentShell
+        <AgentShell executionState={data.executionState as NodeExecutionState | undefined}
             name={node.name}
             description={node.description}
             color="blue"

@@ -56,7 +56,7 @@ export function reactFlowToPairtialSystem(
                 },
 
                 config: {
-                    ...data
+                    ...Object.fromEntries(Object.entries(data).filter(([key]) => key !== "executionState"))
                 }
             }
         })
@@ -90,6 +90,8 @@ export function reactFlowToPairtialSystem(
         name:
             systemName,
 
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
         nodes:
             pairtialNodes,
 

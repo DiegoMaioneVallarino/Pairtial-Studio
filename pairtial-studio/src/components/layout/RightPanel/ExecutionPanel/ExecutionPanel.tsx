@@ -91,6 +91,8 @@ const inputEvents =
     }
 
 
+    if (startedEvent && !completedEvent && events.some(event => event.runId === startedEvent.runId && event.type === "run.cancelled")) status = "cancelled"
+
     const duration =
         startedEvent &&
         completedEvent

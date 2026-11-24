@@ -120,6 +120,15 @@ export function PropertiesPanel({
 
                 </div>
 
+                {node.type === "db" && <>
+                    <div className="properties-field"><label>Operación</label><select value={String(node.data.operation ?? "write")} onChange={e => onUpdate({ operation: e.target.value })}>{["write", "read", "update", "delete", "search"].map(op => <option key={op}>{op}</option>)}</select></div>
+                    <div className="properties-field"><label>Clave</label><input value={String(node.data.key ?? "result")} onChange={e => onUpdate({ key: e.target.value })} /></div>
+                    <div className="properties-field"><label>Valor (vacío = entradas)</label><textarea value={String(node.data.value ?? "")} onChange={e => onUpdate({ value: e.target.value })} /></div>
+                </>}
+                {node.type === "king" && <>
+                    <div className="properties-field"><label>Objetivo</label><textarea value={String(node.data.objective ?? "Evaluar resultados")} onChange={e => onUpdate({ objective: e.target.value })} /></div>
+                    <div className="properties-field"><label>Decisión simulada</label><select value={String(node.data.decision ?? "approve")} onChange={e => onUpdate({ decision: e.target.value })}>{["approve", "revise", "reject"].map(op => <option key={op}>{op}</option>)}</select></div>
+                </>}
             </div>
 
         </aside>

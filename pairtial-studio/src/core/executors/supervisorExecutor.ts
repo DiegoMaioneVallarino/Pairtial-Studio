@@ -1,3 +1,4 @@
+import { abortableDelay } from "../runtime/abortableDelay"
 
 import {
     createEnvelope
@@ -11,14 +12,13 @@ import type {
 export const supervisorExecutor: NodeExecutor =
     async ({
         node,
-        inputs
+        inputs,
+        context
     }) => {
 
         const startedAt = performance.now()
 
-        await new Promise<void>(
-            resolve => setTimeout(resolve, 400)
-        )
+        await abortableDelay(400, context.signal)
 
         const received = inputs.map(
             envelope => envelope.payload

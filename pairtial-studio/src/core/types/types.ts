@@ -1,4 +1,5 @@
 export type NodeKind =
+    | "db"
     | "agent"
     | "api"
     | "fabric"
