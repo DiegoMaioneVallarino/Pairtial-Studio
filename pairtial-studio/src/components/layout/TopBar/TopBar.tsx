@@ -5,6 +5,8 @@ import "./TopBar.css"
 type TopBarProps = {
     projectName: string
     isRunning: boolean
+    maxConcurrency: number
+    onConcurrencyChange: (value: number) => void
 
     onExecute: () => void
     onStop: () => void
@@ -15,6 +17,8 @@ type TopBarProps = {
 export function TopBar({
     projectName,
     isRunning,
+    maxConcurrency,
+    onConcurrencyChange,
     onExecute,
     onStop,
     onReset
@@ -85,6 +89,14 @@ export function TopBar({
             {/* ACTIONS */}
 
             <div className="top-bar-actions">
+                <select className="top-concurrency-select" aria-label="Maximum concurrent nodes"
+                    title="Maximum concurrent nodes" value={maxConcurrency} disabled={isRunning}
+                    onChange={event => onConcurrencyChange(Number(event.target.value))}>
+                    <option value={1}>Sequential</option>
+                    <option value={2}>Parallel ×2</option>
+                    <option value={4}>Parallel ×4</option>
+                    <option value={8}>Parallel ×8</option>
+                </select>
 
                 {/* RUN / STOP */}
 

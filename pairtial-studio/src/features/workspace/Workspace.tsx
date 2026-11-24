@@ -66,6 +66,7 @@ type WorkspaceProps = {
     selectedButton:
         LeftBarButtonsTypes | null
 
+    maxConcurrency: number
     executionRequest: number
     stopRequest: number
     resetRequest: number
@@ -146,6 +147,7 @@ const nodeDefaults = {
 
 function Workspace({
     selectedButton,
+    maxConcurrency,
     executionRequest,
     stopRequest,
     resetRequest,
@@ -383,6 +385,7 @@ const system = {
                         system,
                         {
                             signal: controller.signal,
+                            maxConcurrency,
                             onEvent: event => {
                                 if (useSystemStore.getState().activeSystemId !== system.id) { controller.abort(); return }
 

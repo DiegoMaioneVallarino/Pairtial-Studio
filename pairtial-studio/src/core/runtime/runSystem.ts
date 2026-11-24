@@ -1,3 +1,4 @@
+import { scheduleNodes } from "./scheduler"
 import { conditionalPort } from "./decisionEngine"
 
 import type {
@@ -35,12 +36,11 @@ export async function runSystem(
 
     const runId = crypto.randomUUID()
 
-    const fallbackController =
-        new AbortController()
-
-    const signal =
-        options.signal ??
-        fallbackController.signal
+    const controller = new AbortController()
+    const signal = controller.signal
+    const forwardAbort = () => controller.abort(options.signal?.reason)
+    options.signal?.addEventListener("abort", forwardAbort, { once: true })
+    if (options.signal?.aborted) forwardAbort()
 
     const mockDatabase = new Map<string, unknown>()
     const events: RuntimeEvent[] = []
@@ -153,7 +153,8 @@ export async function runSystem(
 
         // Ejecutar cada nodo.
 
-        for (const node of executionPlan) {
+        await scheduleNodes(system, executionPlan, options.maxConcurrency ?? 4, signal,
+            () => controller.abort(), async node => {
 
             signal.throwIfAborted()
 
@@ -179,7 +180,7 @@ export async function runSystem(
             if (incomingEdges.length > 0 && inputs.length === 0) {
                 nodeStates[node.id] = "skipped"
                 emit({type: "node.skipped", runId, nodeId: node.id, timestamp: Date.now(), reason: "No active incoming route"})
-                continue
+                return
             }
 
             nodeStates[node.id] = "running"
@@ -259,7 +260,7 @@ export async function runSystem(
             } catch (error) {
 
                 if (isCancelled(error)) {
-                    return cancelRun()
+                    throw error
                 }
 
                 nodeStates[node.id] = "error"
@@ -277,9 +278,9 @@ export async function runSystem(
                     error: message
                 })
 
-                return failRun(error)
+                throw error
             }
-        }
+        })
 
         signal.throwIfAborted()
 
@@ -301,10 +302,12 @@ export async function runSystem(
 
     } catch (error) {
 
-        if (isCancelled(error)) {
+        if (options.signal?.aborted || (error instanceof Error && error.name === "AbortError")) {
             return cancelRun()
         }
 
         return failRun(error)
+    } finally {
+        options.signal?.removeEventListener("abort", forwardAbort)
     }
 }

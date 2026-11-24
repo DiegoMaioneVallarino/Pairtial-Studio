@@ -26,6 +26,7 @@ const [
     setExecutionRequest
 ] = useState(0)
 
+const [maxConcurrency, setMaxConcurrency] = useState(4)
 const [stopRequest, setStopRequest] = useState(0)
 const [resetRequest, setResetRequest] = useState(0)
 
@@ -58,6 +59,8 @@ function handleExecute() {
 
     isRunning={isRunning}
 
+    maxConcurrency={maxConcurrency}
+    onConcurrencyChange={setMaxConcurrency}
     onExecute={handleExecute}
     onStop={() => setStopRequest(n => n + 1)}
     onReset={() => setResetRequest(n => n + 1)}
@@ -75,6 +78,7 @@ function handleExecute() {
                 <Workspace
     selectedButton={selectedButton}
 
+    maxConcurrency={maxConcurrency}
     executionRequest={executionRequest}
     stopRequest={stopRequest}
     resetRequest={resetRequest}

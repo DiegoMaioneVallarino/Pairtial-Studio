@@ -93,4 +93,5 @@ export type RuntimeEventListener = (
 export type RuntimeOptions = {
     onEvent?: RuntimeEventListener
     signal?: AbortSignal
+    maxConcurrency?: number
 }
