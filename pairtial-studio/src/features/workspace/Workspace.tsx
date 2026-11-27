@@ -1,3 +1,4 @@
+import { runRemote, listRemoteRuns, listRemoteDecisions, remoteDecisions, serverRequest } from "../../core/remote/serverClient"
 import { RunJournal, type Checkpoint } from "../../core/storage/runJournal"
 import { ArtifactRegistry, type Artifact } from "../../core/artifacts/artifactRegistry"
 import { DecisionManager, type DecisionRequest } from "../../core/decisions/decisionManager"
@@ -17,9 +18,7 @@ import {
     reactFlowToPairtialSystem
 } from "../../core/graph/reactFlowToPairtialSystem"
 
-import {
-    runSystem
-} from "../../core/runtime/runSystem"
+
 
 import type {
     RuntimeEvent
@@ -166,6 +165,8 @@ function Workspace({
 }: WorkspaceProps) {
 
     const [journal] = useState(() => new RunJournal(localStorage))
+    const [serverOnline,setServerOnline]=useState(false)
+    const [activeRemote,setActiveRemote]=useState<string[]>([])
     const [storageError,setStorageError] = useState("")
     const [history,setHistory] = useState<Checkpoint[]>(() => {try{return journal.list()}catch{return []}})
     const [resumeRequest,setResumeRequest] = useState<Checkpoint|null>(null)
@@ -173,6 +174,8 @@ function Workspace({
     const [artifactRegistry] = useState(() => new ArtifactRegistry(setArtifactRecords,artifactRecords))
     const [requests,setRequests] = useState<DecisionRequest[]>([])
     const [decisions] = useState(() => new DecisionManager(setRequests))
+    const [remoteRequests,setRemoteRequests]=useState<DecisionRequest[]>([])
+    useEffect(()=>{let alive=true;let busy=false;const poll=async()=>{if(busy)return;busy=true;try{const [runs,requests,status]=await Promise.all([listRemoteRuns(),listRemoteDecisions(),serverRequest<{active:string[]}>("/status")]);if(alive){setServerOnline(true);setActiveRemote(status.active);setHistory(runs);setRemoteRequests(requests);for(const r of runs)artifactRegistry.restore(r.artifacts);if(!controllerRef.current)onRunningChange(status.active.length>0)}}catch{if(alive)setServerOnline(false)}finally{busy=false}};void poll();const timer=setInterval(poll,1000);return()=>{alive=false;clearInterval(timer)}},[artifactRegistry])
     const controllerRef = useRef<AbortController | null>(null)
     const lastRequest = useRef(0)
     const [
@@ -236,7 +239,6 @@ function Workspace({
 
     useEffect(() => {
 
-    controllerRef.current?.abort()
     setRuntimeEvents(history.find(r=>r.system.id===activeSystemId)?.events ?? [])
     loadingSystemRef.current =
         true
@@ -323,7 +325,7 @@ useEffect(() => {
 ])
 
     useEffect(() => {
-        if (stopRequest) controllerRef.current?.abort()
+        if (stopRequest) {if(controllerRef.current)controllerRef.current.abort();else void serverRequest<{active:string[]}>("/status").then(s=>Promise.all(s.active.map(id=>serverRequest(`/runs/${id}/cancel`,{})))).catch(console.error)}
     }, [stopRequest])
 
     useEffect(() => {
@@ -402,12 +404,12 @@ const system = {
                 if(restoring) setNodes(items=>items.map(n=>({...n,data:{...n.data,executionState:restoring.nodeStates[n.id]??"idle"}})))
 
                 const result =
-                    await runSystem(
+                    await runRemote(
                         system,
                         {
                             checkpoint: restoring ?? undefined,
                             onCheckpoint: cp => {
-                                try {journal.save(cp);setHistory(journal.list());setStorageError("")}
+                                try {setHistory(old=>[cp,...old.filter(r=>r.runId!==cp.runId)]);setStorageError("")}
                                 catch(error){setStorageError(`No se pudo guardar: ${String(error)}`);controller.abort()}
                             },
                             signal: controller.signal,
@@ -416,7 +418,7 @@ const system = {
                             artifacts: artifactRegistry,
                             fabrics: useSystemStore.getState().systems,
                             onEvent: event => {
-                                if (useSystemStore.getState().activeSystemId !== system.id) { controller.abort(); return }
+                                if (useSystemStore.getState().activeSystemId !== system.id) return
 
                                 setRuntimeEvents(
                                     current => [
@@ -532,6 +534,7 @@ if (
 
             } catch (error) {
 
+                setStorageError(String(error))
                 console.error(
                     "PAIRtial execution failed:",
                     error
@@ -748,14 +751,14 @@ if (
 
     return (
         <div id="WorkspaceArea">
-            <DecisionInbox requests={requests} manager={decisions}/>
+            <DecisionInbox requests={serverOnline?remoteRequests:requests} manager={serverOnline?remoteDecisions:decisions}/>
             <details style={{position:"absolute",top:12,left:12,zIndex:20,background:"#222",color:"white",padding:8,maxWidth:320}}>
-                <summary>Runtime history ({history.length})</summary>
+                <summary>Core Server {serverOnline?"online":"offline"} · History ({history.length})</summary>
                 {storageError && <p role="alert">{storageError}</p>}
                 {history.filter(r=>r.system.id===activeSystemId).map(r=><div key={r.runId} style={{padding:6}}>
-                    <small>{new Date(r.updatedAt).toLocaleString()} · {r.status === "running" && !controllerRef.current ? "interrupted" : r.status}</small>
+                    <small>{new Date(r.updatedAt).toLocaleString()} · {r.status === "running" && !activeRemote.includes(r.runId) ? "interrupted" : r.status}</small>
                     <button disabled={!!controllerRef.current} onClick={()=>{setRuntimeEvents(r.events);setNodes(items=>items.map(n=>({...n,data:{...n.data,executionState:r.nodeStates[n.id]??"idle"}})))}}>Inspect</button>
-                    {r.status==="running" && <button disabled={!!controllerRef.current} onClick={()=>setResumeRequest(r)}>Resume</button>}
+                    {r.status==="running" && !activeRemote.includes(r.runId) && <button disabled={!!controllerRef.current} onClick={()=>setResumeRequest(r)}>Resume</button>}
                 </div>)}
             </details>
 
