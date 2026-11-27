@@ -1,3 +1,4 @@
+import type { PairtialSystem } from "../types/types"
 import type {
     Envelope
 } from "../envelope/envelope.types"
@@ -94,4 +95,7 @@ export type RuntimeOptions = {
     onEvent?: RuntimeEventListener
     signal?: AbortSignal
     maxConcurrency?: number
+    fabrics?: PairtialSystem[]
+    ancestry?: string[]
+    initialInputs?: Envelope[]
 }

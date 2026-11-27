@@ -35,6 +35,8 @@ export async function runSystem(
 ): Promise<RuntimeResult> {
 
     const runId = crypto.randomUUID()
+    const ancestry = [...(options.ancestry ?? []), system.id]
+    const fabrics = options.ancestry ? options.fabrics ?? [] : structuredClone(options.fabrics ?? [])
 
     const controller = new AbortController()
     const signal = controller.signal
@@ -166,7 +168,7 @@ export async function runSystem(
                         edge.targetNodeId === node.id
                 )
 
-            const inputs = incomingEdges.flatMap(edge => {
+            const inputs = incomingEdges.length === 0 ? (options.initialInputs ?? []).map(e => ({...e, targetPortId: "input"})) : incomingEdges.flatMap(edge => {
                 const sourcePortId = edge.sourcePortId ?? "output"
                 return envelopes.filter(e => e.sourceNodeId === edge.sourceNodeId && (e.sourcePortId ?? "output") === sourcePortId)
                     .map(e => ({...e, sourcePortId, targetPortId: edge.targetPortId ?? "input", edgeId: edge.id}))
@@ -218,7 +220,15 @@ export async function runSystem(
                             runId,
                             system,
                             signal,
-                            mockDatabase
+                            mockDatabase,
+                            runFabric: async (id, inputs) => {
+                                if (ancestry.includes(id)) throw new Error(`Recursive Fabric: ${id}`)
+                                if (ancestry.length >= 8) throw new Error("Fabric nesting limit reached")
+                                const child = fabrics.find(f => f.id === id)
+                                if (!child) throw new Error(`Fabric not found: ${id}`)
+                                const result = await runSystem(child, {signal, maxConcurrency: 1, fabrics, ancestry, initialInputs: inputs})
+                                return {...result, envelopes: result.envelopes.filter(e => !child.edges.some(edge => edge.sourceNodeId === e.sourceNodeId))}
+                            }
                         }
                     })
 

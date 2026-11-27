@@ -1,4 +1,5 @@
 import "./PropertiesPanel.css"
+import { useSystemStore } from "../../../../stores/systemStore"
 import type { Node } from "@xyflow/react"
 import type { NodeKind } from "../../../../core/types/types"
 import { nodeFields, simulationFields, getConfig } from "../../../../core/config/nodeConfig"
@@ -6,6 +7,8 @@ import type { Field } from "../../../../core/config/nodeConfig"
 
 type PropertiesPanelProps = { node: Node | null; onUpdate: (data: Record<string, unknown>) => void }
 export function PropertiesPanel({node, onUpdate}: PropertiesPanelProps) {
+ const systems = useSystemStore(s=>s.systems)
+ const activeId = useSystemStore(s=>s.activeSystemId)
  if (!node) return <aside className="Properties-panel"><h3>Propiedades</h3><div className="properties-empty">Selecciona un nodo para editar sus propiedades.</div></aside>
  const kind = node.type as NodeKind
  const config = getConfig(kind, node.data)
@@ -24,7 +27,7 @@ export function PropertiesPanel({node, onUpdate}: PropertiesPanelProps) {
    <div className="properties-field"><label htmlFor="node-name">Nombre</label><input id="node-name" value={String(node.data.name ?? "")} onChange={e=>onUpdate({name:e.target.value})}/></div>
    <div className="properties-field"><label htmlFor="node-description">Descripción</label><textarea id="node-description" rows={3} value={String(node.data.description ?? "")} onChange={e=>onUpdate({description:e.target.value})}/></div>
    <h4>Configuración del nodo</h4>
-   {(nodeFields[kind] ?? []).map(renderField)}
+   {kind === "fabric" ? <div className="properties-field"><label htmlFor="fabric-id">Sistema reutilizable</label><select id="fabric-id" value={String(node.data.fabricId ?? "")} onChange={e=>onUpdate({fabricId:e.target.value})}><option value="">Seleccionar sistema</option>{systems.filter(s=>s.id!==activeId).map(s=><option key={s.id} value={s.id}>{s.name}</option>)}</select><small>Las entradas se entregan a los nodos raíz del sistema.</small></div> : (nodeFields[kind] ?? []).map(renderField)}
    <h4>Simulación local</h4>
    <small>Sin llamadas externas. Tokens y costes son ficticios.</small>
    {simulationFields(kind).map(renderField)}

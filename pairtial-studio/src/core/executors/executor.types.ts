@@ -13,6 +13,7 @@ export type ExecutorContext = {
     system: PairtialSystem
     signal: AbortSignal
     mockDatabase: Map<string, unknown>
+    runFabric: (id: string, inputs: Envelope[]) => Promise<import("../runtime/runtime.types").RuntimeResult>
 }
 
 

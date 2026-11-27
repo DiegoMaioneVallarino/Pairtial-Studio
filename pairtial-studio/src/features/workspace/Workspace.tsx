@@ -1,4 +1,4 @@
-import { LoopNode, DeferredNode, BestOfTwoNode } from "../nodes/IterationNodes"
+import { FabricNode, LoopNode, DeferredNode, BestOfTwoNode } from "../nodes/IterationNodes"
 import { connectionError } from "../../core/ports/portRegistry"
 import "./Workspace.css"
 
@@ -79,7 +79,7 @@ type WorkspaceProps = {
 
 
 const nodeTypes = {
-    loop: LoopNode, deferred: DeferredNode, "best-of-two": BestOfTwoNode,
+    fabric: FabricNode, loop: LoopNode, deferred: DeferredNode, "best-of-two": BestOfTwoNode,
     db: DatabaseNode,
     king: KingNode,
 
@@ -111,6 +111,7 @@ const edgeTypes = {
 }
 
 const nodeDefaults = {
+    fabric: {name:"Fabric", description:"Sistema reutilizable", fabricId:""},
     loop: {name:"Loop", description:"Iteración simulada"},
     deferred: {name:"Deferred", description:"Espera configurable"},
     "best-of-two": {name:"Best of Two", description:"Comparación simulada"},
@@ -391,6 +392,7 @@ const system = {
                         {
                             signal: controller.signal,
                             maxConcurrency,
+                            fabrics: useSystemStore.getState().systems,
                             onEvent: event => {
                                 if (useSystemStore.getState().activeSystemId !== system.id) { controller.abort(); return }
 
@@ -635,8 +637,7 @@ if (
             ) => {
 
                 if (
-                    selectedButton === null ||
-                    selectedButton === "fabrics"
+                    selectedButton === null
                 ) {
 
                     setSelectedNodeId(null)
@@ -670,7 +671,7 @@ if (
 
 
                 const nodeType =
-                    selectedButton
+                    selectedButton === "fabrics" ? "fabric" : selectedButton
 
 
                 const defaults =
