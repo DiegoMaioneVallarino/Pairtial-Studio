@@ -1,3 +1,4 @@
+import type { ArtifactReference } from "../artifacts/artifactRegistry"
 export type EnvelopeMetadata = {
     mimeType?: string
     tokens?: number
@@ -16,6 +17,7 @@ export type Envelope<T = unknown> = {
     targetPortId?: string
     edgeId?: string
 
+    artifacts?: ArtifactReference[]
     payload: T
 
     metadata?: EnvelopeMetadata

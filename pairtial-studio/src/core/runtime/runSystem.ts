@@ -1,3 +1,4 @@
+import { ArtifactRegistry, artifactDependencies } from "../artifacts/artifactRegistry"
 import { scheduleNodes } from "./scheduler"
 import { conditionalPort } from "./decisionEngine"
 
@@ -44,6 +45,7 @@ export async function runSystem(
     options.signal?.addEventListener("abort", forwardAbort, { once: true })
     if (options.signal?.aborted) forwardAbort()
 
+    const artifacts = options.artifacts ?? new ArtifactRegistry()
     const mockDatabase = new Map<string, unknown>()
     const events: RuntimeEvent[] = []
     const envelopes: Envelope[] = []
@@ -221,6 +223,7 @@ export async function runSystem(
                             system,
                             signal,
                             mockDatabase,
+                            artifacts,
                             requestDecision: async request => {
                                 if (!options.decisions) throw new Error("Human node requires a DecisionManager")
                                 if (request.mode === "selection" && !request.choices.length) throw new Error("Selection requires choices")
@@ -236,7 +239,7 @@ export async function runSystem(
                                 if (ancestry.length >= 8) throw new Error("Fabric nesting limit reached")
                                 const child = fabrics.find(f => f.id === id)
                                 if (!child) throw new Error(`Fabric not found: ${id}`)
-                                const result = await runSystem(child, {signal, maxConcurrency: 1, fabrics, ancestry, initialInputs: inputs, decisions: options.decisions})
+                                const result = await runSystem(child, {signal, maxConcurrency: 1, fabrics, ancestry, initialInputs: inputs, artifacts, decisions: options.decisions})
                                 return {...result, envelopes: result.envelopes.filter(e => !child.edges.some(edge => edge.sourceNodeId === e.sourceNodeId))}
                             }
                         }
@@ -244,6 +247,7 @@ export async function runSystem(
 
                 signal.throwIfAborted()
 
+                output.artifacts = artifactDependencies([...inputs, output])
                 output.sourcePortId = "output"
                 envelopes.push(output)
                 const branch = conditionalPort(node.kind, output)

@@ -1,3 +1,4 @@
+import { ArtifactRegistry, type Artifact } from "../../core/artifacts/artifactRegistry"
 import { DecisionManager, type DecisionRequest } from "../../core/decisions/decisionManager"
 import DecisionInbox from "./DecisionInbox"
 import { HumanNode, FabricNode, LoopNode, DeferredNode, BestOfTwoNode } from "../nodes/IterationNodes"
@@ -163,6 +164,8 @@ function Workspace({
     onRunningChange
 }: WorkspaceProps) {
 
+    const [artifactRecords,setArtifactRecords] = useState<Artifact[]>([])
+    const [artifactRegistry] = useState(() => new ArtifactRegistry(setArtifactRecords))
     const [requests,setRequests] = useState<DecisionRequest[]>([])
     const [decisions] = useState(() => new DecisionManager(setRequests))
     const controllerRef = useRef<AbortController | null>(null)
@@ -398,6 +401,7 @@ const system = {
                             signal: controller.signal,
                             maxConcurrency,
                             decisions,
+                            artifacts: artifactRegistry,
                             fabrics: useSystemStore.getState().systems,
                             onEvent: event => {
                                 if (useSystemStore.getState().activeSystemId !== system.id) { controller.abort(); return }
@@ -796,6 +800,7 @@ if (
 
 
                 <RightPanel
+    artifacts={artifactRecords}
     selectedPanel="properties"
     selectedNode={
         selectedNode

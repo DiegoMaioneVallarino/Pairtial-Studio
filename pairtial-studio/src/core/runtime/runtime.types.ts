@@ -99,5 +99,6 @@ export type RuntimeOptions = {
     fabrics?: PairtialSystem[]
     ancestry?: string[]
     decisions?: import("../decisions/decisionManager").DecisionManager
+    artifacts?: import("../artifacts/artifactRegistry").ArtifactRegistry
     initialInputs?: Envelope[]
 }

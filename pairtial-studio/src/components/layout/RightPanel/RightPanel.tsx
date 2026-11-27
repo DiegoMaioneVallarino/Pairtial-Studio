@@ -1,3 +1,5 @@
+import { ArtifactsPanel } from "./ArtifactsPanel"
+import type { Artifact } from "../../../core/artifacts/artifactRegistry"
 import "./RightPanel.css"
 
 import {
@@ -32,8 +34,10 @@ type RightPanelTab =
     | "fabrics"
     | "properties"
     | "execution"
+    | "artifacts"
 
 type RightPanelProps = {
+    artifacts: Artifact[]
     selectedPanel?: RightPanelTab
 
     selectedNode: Node | null
@@ -48,6 +52,7 @@ type RightPanelProps = {
 
 
 export function RightPanel({
+    artifacts,
     selectedPanel,
     selectedNode,
     runtimeEvents,
@@ -165,10 +170,13 @@ export function RightPanel({
                                 Ejecución
                             </span>
                         </button>
+                        <button className={`right-panelIn-btn ${currentPanel === "artifacts" ? "selected" : ""}`} onClick={()=>setCurrentPanel("artifacts")}>Artifacts</button>
                         </div>
 
 
                         <div className="right-panel-content">
+                            {currentPanel === "artifacts" && <ArtifactsPanel artifacts={artifacts}/>}
+                            {currentPanel === "execution" && <ExecutionPanel node={selectedNode} events={runtimeEvents}/>}
 
                             {currentPanel === "systems" && (
                                 <SystemsPanel />
