@@ -11,6 +11,7 @@ export type LeftBarButtonsTypes =
     | "supervisor"
     | "hr"
     | "king"
+    | "human"
     | "loop"
     | "deferred"
     | "best-of-two"
@@ -233,7 +234,7 @@ function LeftBar({
                 </div>
 
 
-                {([['loop','↻'],['best-of-two','⇄'],['deferred','◷']] as const).map(([kind, glyph]) => <button key={kind} type="button" title={kind} aria-label={kind} className={`tools-bt ${selectedButton===kind?'select':''}`} style={{color:'white',fontSize:24,border:0}} onClick={()=>handleButtonClick(kind)}>{glyph}</button>)}
+                {([['human','♙'],['loop','↻'],['best-of-two','⇄'],['deferred','◷']] as const).map(([kind, glyph]) => <button key={kind} type="button" title={kind} aria-label={kind} className={`tools-bt ${selectedButton===kind?'select':''}`} style={{color:'white',fontSize:24,border:0}} onClick={()=>handleButtonClick(kind)}>{glyph}</button>)}
                 <div className="tools-spacer" />
 
 

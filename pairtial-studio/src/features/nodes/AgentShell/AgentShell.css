@@ -889,3 +889,5 @@
 
 }
 .execution-skipped { opacity: .45; }
+
+.execution-awaiting-human { outline: 2px solid #f59e0b; outline-offset: 3px; }

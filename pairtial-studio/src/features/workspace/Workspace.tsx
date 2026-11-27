@@ -1,4 +1,6 @@
-import { FabricNode, LoopNode, DeferredNode, BestOfTwoNode } from "../nodes/IterationNodes"
+import { DecisionManager, type DecisionRequest } from "../../core/decisions/decisionManager"
+import DecisionInbox from "./DecisionInbox"
+import { HumanNode, FabricNode, LoopNode, DeferredNode, BestOfTwoNode } from "../nodes/IterationNodes"
 import { connectionError } from "../../core/ports/portRegistry"
 import "./Workspace.css"
 
@@ -79,7 +81,7 @@ type WorkspaceProps = {
 
 
 const nodeTypes = {
-    fabric: FabricNode, loop: LoopNode, deferred: DeferredNode, "best-of-two": BestOfTwoNode,
+    human: HumanNode, fabric: FabricNode, loop: LoopNode, deferred: DeferredNode, "best-of-two": BestOfTwoNode,
     db: DatabaseNode,
     king: KingNode,
 
@@ -111,6 +113,7 @@ const edgeTypes = {
 }
 
 const nodeDefaults = {
+    human: {name:"Human",description:"Decisión humana"},
     fabric: {name:"Fabric", description:"Sistema reutilizable", fabricId:""},
     loop: {name:"Loop", description:"Iteración simulada"},
     deferred: {name:"Deferred", description:"Espera configurable"},
@@ -160,6 +163,8 @@ function Workspace({
     onRunningChange
 }: WorkspaceProps) {
 
+    const [requests,setRequests] = useState<DecisionRequest[]>([])
+    const [decisions] = useState(() => new DecisionManager(setRequests))
     const controllerRef = useRef<AbortController | null>(null)
     const lastRequest = useRef(0)
     const [
@@ -392,6 +397,7 @@ const system = {
                         {
                             signal: controller.signal,
                             maxConcurrency,
+                            decisions,
                             fabrics: useSystemStore.getState().systems,
                             onEvent: event => {
                                 if (useSystemStore.getState().activeSystemId !== system.id) { controller.abort(); return }
@@ -403,6 +409,9 @@ const system = {
                                     ]
                                 )
 
+                                if (event.type === "decision.requested" || event.type === "decision.responded") {
+                                    setNodes(items => items.map(n => n.id === event.nodeId ? {...n,data:{...n.data,executionState:event.type === "decision.requested" ? "awaiting-human" : "running"}} : n))
+                                }
                                 if (event.type === "edge.routed") {
                                     setEdges(items => items.map(edge => edge.id === event.edgeId ? {
                                         ...edge, data: {...edge.data, routeState: event.active ? "taken" : "skipped", active: event.active, pulse: event.active ? Date.now() : undefined}
@@ -723,6 +732,7 @@ if (
 
     return (
         <div id="WorkspaceArea">
+            <DecisionInbox requests={requests} manager={decisions}/>
 
             <div id="Workspace">
 

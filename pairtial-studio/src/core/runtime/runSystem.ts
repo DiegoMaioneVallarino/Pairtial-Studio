@@ -72,7 +72,7 @@ export async function runSystem(
         for (const node of system.nodes) {
             if (
                 nodeStates[node.id] === "running" ||
-                nodeStates[node.id] === "waiting"
+                nodeStates[node.id] === "awaiting-human" || nodeStates[node.id] === "waiting"
             ) {
                 nodeStates[node.id] = "idle"
             }
@@ -95,7 +95,7 @@ export async function runSystem(
 
     function failRun(error: unknown): RuntimeResult {
         for (const id of Object.keys(nodeStates)) {
-            if (nodeStates[id] === "waiting" || nodeStates[id] === "running") nodeStates[id] = "idle"
+            if (nodeStates[id] === "awaiting-human" || nodeStates[id] === "waiting" || nodeStates[id] === "running") nodeStates[id] = "idle"
         }
 
         const message =
@@ -156,7 +156,7 @@ export async function runSystem(
         // Ejecutar cada nodo.
 
         await scheduleNodes(system, executionPlan, options.maxConcurrency ?? 4, signal,
-            () => controller.abort(), async node => {
+            () => controller.abort(), async (node, suspend) => {
 
             signal.throwIfAborted()
 
@@ -221,12 +221,22 @@ export async function runSystem(
                             system,
                             signal,
                             mockDatabase,
+                            requestDecision: async request => {
+                                if (!options.decisions) throw new Error("Human node requires a DecisionManager")
+                                if (request.mode === "selection" && !request.choices.length) throw new Error("Selection requires choices")
+                                nodeStates[node.id] = "awaiting-human"
+                                emit({type:"decision.requested",runId,nodeId:node.id,timestamp:Date.now()})
+                                const response = await suspend(options.decisions.request(request,signal))
+                                nodeStates[node.id] = "running"
+                                emit({type:"decision.responded",runId,nodeId:node.id,timestamp:Date.now()})
+                                return response
+                            },
                             runFabric: async (id, inputs) => {
                                 if (ancestry.includes(id)) throw new Error(`Recursive Fabric: ${id}`)
                                 if (ancestry.length >= 8) throw new Error("Fabric nesting limit reached")
                                 const child = fabrics.find(f => f.id === id)
                                 if (!child) throw new Error(`Fabric not found: ${id}`)
-                                const result = await runSystem(child, {signal, maxConcurrency: 1, fabrics, ancestry, initialInputs: inputs})
+                                const result = await runSystem(child, {signal, maxConcurrency: 1, fabrics, ancestry, initialInputs: inputs, decisions: options.decisions})
                                 return {...result, envelopes: result.envelopes.filter(e => !child.edges.some(edge => edge.sourceNodeId === e.sourceNodeId))}
                             }
                         }

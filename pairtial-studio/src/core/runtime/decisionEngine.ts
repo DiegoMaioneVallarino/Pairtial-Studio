@@ -11,7 +11,7 @@ export function conditionalPort(kind: NodeKind, output: Envelope): string | unde
         if (payload.passed === true) return "passed"
         if (payload.passed === false) return "rejected"
     }
-    if ((kind === "king" || kind === "supervisor") && "decision" in payload) {
+    if ((kind === "human" || kind === "king" || kind === "supervisor") && "decision" in payload) {
         switch (payload.decision) {
             case "approve": case "approved": return "approved"
             case "revise": return "revise"

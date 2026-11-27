@@ -4,6 +4,7 @@ const text = (key: string, label: string, defaultValue = "", kind: "text" | "tex
 const select = (key: string, label: string, defaultValue: string, options: string[]): Field => ({ key, label, defaultValue, options, kind: "select" })
 const num = (key: string, label: string, defaultValue: number, min: number, max: number, step = 1): Field => ({ key, label, defaultValue, min, max, step, kind: "number" })
 export const nodeFields: Partial<Record<NodeKind, Field[]>> = {
+ human: [text("prompt","Solicitud","Revisar resultado","textarea"),select("mode","Tipo","approval",["approval","selection","instruction","parameter"]),text("choices","Opciones (una por línea)","A\nB","textarea")],
  fabric: [text("fabricId", "Sistema reutilizable")],
  loop: [num("maxIterations", "Máximo de iteraciones", 5, 1, 100), num("initialScore", "Puntuación inicial", 0, 0, 100), num("targetScore", "Objetivo", 80, 0, 100), num("scoreIncrement", "Incremento simulado", 20, 0, 100), num("iterationDelayMs", "Latencia por iteración", 100, 0, 60000)],
  deferred: [num("delayMs", "Espera adicional (ms)", 1000, 0, 600000)],

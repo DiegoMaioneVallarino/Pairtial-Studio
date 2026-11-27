@@ -1,4 +1,5 @@
 export type NodeKind =
+    | "human"
     | "db"
     | "agent"
     | "api"
@@ -63,3 +64,4 @@ export type NodeExecutionState =
     | "success"
     | "error"
     | "skipped"
+    | "awaiting-human"

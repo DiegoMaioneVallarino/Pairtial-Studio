@@ -1,3 +1,4 @@
+import { humanExecutor } from "./humanExecutor"
 import { fabricExecutor } from "./fabricExecutor"
 import { loopExecutor, deferredExecutor, bestOfTwoExecutor } from "./iterationExecutor"
 import { withMockConfig } from "./mockExecutor"
@@ -40,6 +41,7 @@ import {
 const executors:
     Partial<Record<NodeKind, NodeExecutor>> = {
 
+        human: humanExecutor,
         fabric: fabricExecutor,
         loop: loopExecutor,
         deferred: deferredExecutor,

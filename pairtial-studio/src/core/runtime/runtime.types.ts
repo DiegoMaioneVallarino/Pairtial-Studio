@@ -10,6 +10,7 @@ import type {
 
 
 export type RuntimeEvent =
+    | {type:"decision.requested"|"decision.responded";runId:string;nodeId:string;timestamp:number}
     | { type: "node.skipped"; runId: string; nodeId: string; timestamp: number; reason: string }
     | { type: "edge.routed"; runId: string; nodeId: string; edgeId: string; timestamp: number; active: boolean }
     | {
@@ -97,5 +98,6 @@ export type RuntimeOptions = {
     maxConcurrency?: number
     fabrics?: PairtialSystem[]
     ancestry?: string[]
+    decisions?: import("../decisions/decisionManager").DecisionManager
     initialInputs?: Envelope[]
 }
