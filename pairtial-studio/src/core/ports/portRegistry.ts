@@ -6,6 +6,9 @@ const input = p('input','Input')
 const out = (type: PortType) => p('output','Output',type)
 export function getPorts(kind: NodeKind | string): { inputs: Port[]; outputs: Port[] } {
  switch(kind) {
+  case 'loop': return {inputs:[input],outputs:[out('json'),p('reached','Reached','json'),p('exhausted','Exhausted','json')]}
+  case 'best-of-two': return {inputs:[p('input','Candidate A'),p('candidate-b','Candidate B')],outputs:[out('json'),p('a','Winner A','json'),p('b','Winner B','json')]}
+  case 'deferred': return {inputs:[input],outputs:[out('any')]}
   case 'agent': return {inputs:[input,p('context','Context')],outputs:[out('text')]}
   case 'api': return {inputs:[input],outputs:[out('json')]}
   case 'quality': return {inputs:[input,p('context','Context')],outputs:[out('quality'),p('score','Score','number'),p('passed','Passed','quality'),p('rejected','Rejected','quality')]}

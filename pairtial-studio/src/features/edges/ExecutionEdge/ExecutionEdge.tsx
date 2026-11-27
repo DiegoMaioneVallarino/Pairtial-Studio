@@ -11,7 +11,6 @@ type ExecutionEdgeData = {
     routeState?: "taken" | "skipped"
     pulse?: number
     active?: boolean
-    feedback?: unknown
 
 }
 
@@ -54,10 +53,9 @@ export default function ExecutionEdge({
     markerEnd={markerEnd}
     style={style}
     className={
-    (edgeData?.routeState === "skipped" ? "execution-edge-path execution-edge-skipped" : edgeData?.active
+    edgeData?.routeState === "skipped" ? "execution-edge-path execution-edge-skipped" : edgeData?.active
         ? "execution-edge-path execution-edge-active"
-        : edgeData?.routeState === "taken" ? "execution-edge-path execution-edge-taken" : "execution-edge-path")
-        + (edgeData?.feedback ? " execution-edge-feedback" : "")
+        : edgeData?.routeState === "taken" ? "execution-edge-path execution-edge-taken" : "execution-edge-path"
 }
 />
 

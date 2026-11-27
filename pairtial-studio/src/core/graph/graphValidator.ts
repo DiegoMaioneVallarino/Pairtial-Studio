@@ -1,6 +1,4 @@
 import { connectionError } from "../ports/portRegistry"
-import { analyzeLoops, MAX_ITERATIONS_LIMIT } from "./loops"
-import { createExecutionPlan } from "./executionPlan"
 import type {
     PairtialSystem
 } from "../types/types"
@@ -81,26 +79,6 @@ export function validateGraph(
     }
 
 
-    for (const edge of system.edges) {
-        if (!edge.feedback) continue
-        const { maxIterations, onExhausted } = edge.feedback
-        if (!Number.isInteger(maxIterations) || maxIterations < 1 || maxIterations > MAX_ITERATIONS_LIMIT) {
-            errors.push(`Edge "${edge.id}": maxIterations must be an integer between 1 and ${MAX_ITERATIONS_LIMIT}`)
-        }
-        if (onExhausted !== "fail" && onExhausted !== "continue") {
-            errors.push(`Edge "${edge.id}": onExhausted must be "fail" or "continue"`)
-        }
-    }
-
-    for (const loop of analyzeLoops(system)) {
-        const { edge } = loop
-        if (!nodeIds.has(edge.sourceNodeId) || !nodeIds.has(edge.targetNodeId)) continue
-        if (edge.sourceNodeId === edge.targetNodeId) continue
-        if (!loop.bodyNodeIds.has(edge.targetNodeId) || !loop.bodyNodeIds.has(edge.sourceNodeId)) {
-            errors.push(`Edge "${edge.id}": a feedback edge must point back to an upstream node`)
-        }
-    }
-
     for (const node of system.nodes) {
 
         try {
@@ -117,14 +95,6 @@ export function validateGraph(
         }
     }
 
-
-    if (errors.length === 0) {
-        try {
-            createExecutionPlan(system)
-        } catch (error) {
-            errors.push(error instanceof Error ? error.message : String(error))
-        }
-    }
 
     return {
         valid:

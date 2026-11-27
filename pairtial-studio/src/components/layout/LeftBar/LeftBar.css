@@ -76,3 +76,5 @@ div#LeftBar {
     flex: 1;
 }
 
+
+.LeftBarInner { overflow-y: auto; }

@@ -6,14 +6,9 @@ import type {
     NodeExecutionState
 } from "../types/types"
 
-import type { ProviderRegistry } from "../llm/provider.types"
-
 
 
 export type RuntimeEvent =
-    | { type: "node.retrying"; runId: string; nodeId: string; timestamp: number; attempt: number; maxAttempts: number; error: string; delayMs: number }
-    | { type: "loop.iterated"; runId: string; edgeId: string; nodeId: string; timestamp: number; iteration: number; maxIterations: number; nodeIds: string[] }
-    | { type: "loop.exhausted"; runId: string; edgeId: string; nodeId: string; timestamp: number; maxIterations: number; onExhausted: "fail" | "continue" }
     | { type: "node.skipped"; runId: string; nodeId: string; timestamp: number; reason: string }
     | { type: "edge.routed"; runId: string; nodeId: string; edgeId: string; timestamp: number; active: boolean }
     | {
@@ -99,8 +94,4 @@ export type RuntimeOptions = {
     onEvent?: RuntimeEventListener
     signal?: AbortSignal
     maxConcurrency?: number
-    /** Proveedores LLM disponibles; por defecto solo `mock`. */
-    providers?: ProviderRegistry
-    /** Fuente de azar para los fallos simulados; por defecto Math.random. */
-    random?: () => number
 }

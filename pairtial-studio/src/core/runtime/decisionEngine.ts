@@ -5,6 +5,8 @@ import type { NodeKind } from "../types/types"
 export function conditionalPort(kind: NodeKind, output: Envelope): string | undefined {
     const payload = output.payload
     if (!payload || typeof payload !== "object") return
+    if (kind === "loop" && "reached" in payload) return payload.reached === true ? "reached" : "exhausted"
+    if (kind === "best-of-two" && "winner" in payload) return payload.winner === "a" ? "a" : "b"
     if (kind === "quality" && "passed" in payload) {
         if (payload.passed === true) return "passed"
         if (payload.passed === false) return "rejected"

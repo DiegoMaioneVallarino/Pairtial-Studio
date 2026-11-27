@@ -1,15 +1,32 @@
 import { scheduleNodes } from "./scheduler"
 import { conditionalPort } from "./decisionEngine"
 
-import type { Envelope } from "../envelope/envelope.types"
-import type { PairtialNode, PairtialSystem } from "../types/types"
-import type { RuntimeEvent, RuntimeResult, NodeExecutionStates, RuntimeOptions } from "./runtime.types"
+import type {
+    Envelope
+} from "../envelope/envelope.types"
 
-import { validateGraph } from "../graph/graphValidator"
-import { createExecutionPlan } from "../graph/executionPlan"
-import { analyzeLoops } from "../graph/loops"
-import { getExecutor } from "../executors/executorRegistry"
-import { defaultProviders } from "../llm/providerRegistry"
+import type {
+    PairtialSystem
+} from "../types/types"
+
+import type {
+    RuntimeEvent,
+    RuntimeResult,
+    NodeExecutionStates,
+    RuntimeOptions
+} from "./runtime.types"
+
+import {
+    validateGraph
+} from "../graph/graphValidator"
+
+import {
+    createExecutionPlan
+} from "../graph/executionPlan"
+
+import {
+    getExecutor
+} from "../executors/executorRegistry"
 
 
 export async function runSystem(
@@ -25,34 +42,14 @@ export async function runSystem(
     options.signal?.addEventListener("abort", forwardAbort, { once: true })
     if (options.signal?.aborted) forwardAbort()
 
-    const providers = options.providers ?? defaultProviders()
-    const random = options.random ?? Math.random
     const mockDatabase = new Map<string, unknown>()
     const events: RuntimeEvent[] = []
-    /** Historial completo (todas las iteraciones). */
     const envelopes: Envelope[] = []
-    /** Última salida por nodo y puerto: lo que ven los consumidores. */
-    const latest = new Map<string, Map<string, Envelope>>()
-    /** Última envelope emitida por el origen de cada arista de retroalimentación. */
-    const feedbackInbox = new Map<string, Envelope>()
-    const loopIterations = new Map<string, number>()
-    const nodeRuns = new Map<string, number>()
     const nodeStates: NodeExecutionStates = {}
-    const nodesById = new Map(system.nodes.map(node => [node.id, node]))
 
     function emit(event: RuntimeEvent) {
         events.push(event)
         options.onEvent?.(event)
-    }
-
-    function publish(nodeId: string, envelope: Envelope) {
-        envelopes.push(envelope)
-        let ports = latest.get(nodeId)
-        if (!ports) {
-            ports = new Map()
-            latest.set(nodeId, ports)
-        }
-        ports.set(envelope.sourcePortId ?? "output", envelope)
     }
 
     function isCancelled(error: unknown): boolean {
@@ -120,57 +117,6 @@ export async function runSystem(
         }
     }
 
-    /**
-     * Tras ejecutar `node`: si es origen de una arista de retroalimentación
-     * activa y quedan iteraciones, devuelve el cuerpo del bucle para re-ejecutarlo.
-     */
-    const loops = analyzeLoops(system)
-    function rewindLoops(node: PairtialNode): PairtialNode[] | undefined {
-        const active = loops.filter(loop =>
-            loop.edge.sourceNodeId === node.id &&
-            latest.get(node.id)?.has(loop.edge.sourcePortId ?? "output")
-        )
-        if (active.length === 0) return undefined
-
-        const body = new Set<string>()
-        for (const loop of active) {
-            const done = loopIterations.get(loop.edge.id) ?? 0
-            const { maxIterations, onExhausted } = loop.feedback
-
-            if (done >= maxIterations) {
-                emit({ type: "loop.exhausted", runId, edgeId: loop.edge.id, nodeId: node.id, timestamp: Date.now(), maxIterations, onExhausted })
-                if (onExhausted === "fail") {
-                    const message = `El bucle "${loop.edge.id}" no convergió tras ${maxIterations} iteraciones`
-                    nodeStates[node.id] = "error"
-                    emit({ type: "node.failed", runId, nodeId: node.id, timestamp: Date.now(), error: message })
-                    throw new Error(message)
-                }
-                continue
-            }
-
-            const source = latest.get(node.id)!.get(loop.edge.sourcePortId ?? "output")!
-            feedbackInbox.set(loop.edge.id, source)
-            loopIterations.set(loop.edge.id, done + 1)
-            for (const id of loop.bodyNodeIds) body.add(id)
-            emit({
-                type: "loop.iterated", runId, edgeId: loop.edge.id, nodeId: node.id, timestamp: Date.now(),
-                iteration: done + 1, maxIterations, nodeIds: [...loop.bodyNodeIds]
-            })
-            emit({ type: "edge.routed", runId, nodeId: loop.edge.targetNodeId, edgeId: loop.edge.id, timestamp: Date.now(), active: true })
-        }
-        if (body.size === 0) return undefined
-
-        const rewound: PairtialNode[] = []
-        for (const id of body) {
-            const bodyNode = nodesById.get(id)
-            if (!bodyNode) continue
-            latest.delete(id)
-            nodeStates[id] = "waiting"
-            rewound.push(bodyNode)
-        }
-        return rewound
-    }
-
     // Inicializar estados.
 
     for (const node of system.nodes) {
@@ -207,12 +153,8 @@ export async function runSystem(
 
         // Ejecutar cada nodo.
 
-        await scheduleNodes(system, executionPlan, {
-            maxConcurrency: options.maxConcurrency ?? 4,
-            signal,
-            abortPeers: () => controller.abort(),
-            afterExecute: rewindLoops,
-            execute: async node => {
+        await scheduleNodes(system, executionPlan, options.maxConcurrency ?? 4, signal,
+            () => controller.abort(), async node => {
 
             signal.throwIfAborted()
 
@@ -223,37 +165,25 @@ export async function runSystem(
                     edge =>
                         edge.targetNodeId === node.id
                 )
-            const forwardEdges = incomingEdges.filter(edge => !edge.feedback)
 
-            const forwardInputs = forwardEdges.flatMap(edge => {
+            const inputs = incomingEdges.flatMap(edge => {
                 const sourcePortId = edge.sourcePortId ?? "output"
-                const envelope = latest.get(edge.sourceNodeId)?.get(sourcePortId)
-                return envelope
-                    ? [{ ...envelope, sourcePortId, targetPortId: edge.targetPortId ?? "input", edgeId: edge.id }]
-                    : []
+                return envelopes.filter(e => e.sourceNodeId === edge.sourceNodeId && (e.sourcePortId ?? "output") === sourcePortId)
+                    .map(e => ({...e, sourcePortId, targetPortId: edge.targetPortId ?? "input", edgeId: edge.id}))
             })
-            const feedbackInputs = incomingEdges.filter(edge => edge.feedback).flatMap(edge => {
-                const envelope = feedbackInbox.get(edge.id)
-                return envelope
-                    ? [{ ...envelope, targetPortId: edge.targetPortId ?? "input", edgeId: edge.id, feedback: true }]
-                    : []
-            })
-            const inputs = [...forwardInputs, ...feedbackInputs]
 
-            // A join runs once when at least one incoming (forward) route delivers data.
-            for (const edge of forwardEdges) {
+            // A join runs once when at least one incoming route delivers data.
+            for (const edge of incomingEdges) {
                 emit({type: "edge.routed", runId, nodeId: node.id, edgeId: edge.id,
-                    timestamp: Date.now(), active: forwardInputs.some(input => input.edgeId === edge.id)})
+                    timestamp: Date.now(), active: inputs.some(input => input.edgeId === edge.id)})
             }
-            if (forwardEdges.length > 0 && forwardInputs.length === 0) {
+            if (incomingEdges.length > 0 && inputs.length === 0) {
                 nodeStates[node.id] = "skipped"
                 emit({type: "node.skipped", runId, nodeId: node.id, timestamp: Date.now(), reason: "No active incoming route"})
                 return
             }
 
             nodeStates[node.id] = "running"
-            const iteration = (nodeRuns.get(node.id) ?? 0) + 1
-            nodeRuns.set(node.id, iteration)
 
             emit({
                 type: "node.started",
@@ -288,29 +218,24 @@ export async function runSystem(
                             runId,
                             system,
                             signal,
-                            mockDatabase,
-                            providers,
-                            random,
-                            iteration,
-                            emit
+                            mockDatabase
                         }
                     })
 
                 signal.throwIfAborted()
 
                 output.sourcePortId = "output"
-                output.iteration = iteration
-                publish(node.id, output)
+                envelopes.push(output)
                 const branch = conditionalPort(node.kind, output)
                 if (branch) {
                     const routed: Envelope = {...output, id: crypto.randomUUID(), sourcePortId: branch, metadata: undefined}
-                    publish(node.id, routed)
+                    envelopes.push(routed)
                     emit({type: "envelope.created", runId, nodeId: node.id, timestamp: Date.now(), envelope: routed})
                 }
                 if (node.kind === "quality") {
                     const score = (output.payload as {score: number}).score
-                    const scoreEnvelope: Envelope = { id: crypto.randomUUID(), createdAt: Date.now(), sourceNodeId: node.id, sourcePortId: "score", iteration, payload: score }
-                    publish(node.id, scoreEnvelope)
+                    const scoreEnvelope: Envelope = { id: crypto.randomUUID(), createdAt: Date.now(), sourceNodeId: node.id, sourcePortId: "score", payload: score }
+                    envelopes.push(scoreEnvelope)
                     emit({type: "envelope.created", runId, nodeId: node.id, timestamp: Date.now(), envelope: scoreEnvelope})
                 }
 
@@ -355,7 +280,7 @@ export async function runSystem(
 
                 throw error
             }
-        }})
+        })
 
         signal.throwIfAborted()
 

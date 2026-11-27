@@ -1,6 +1,5 @@
+import { LoopNode, DeferredNode, BestOfTwoNode } from "../nodes/IterationNodes"
 import { connectionError } from "../../core/ports/portRegistry"
-import { DEFAULT_FEEDBACK, wouldCreateCycle } from "../../core/graph/loops"
-import type { FeedbackConfig } from "../../core/types/types"
 import "./Workspace.css"
 
 import {
@@ -80,6 +79,7 @@ type WorkspaceProps = {
 
 
 const nodeTypes = {
+    loop: LoopNode, deferred: DeferredNode, "best-of-two": BestOfTwoNode,
     db: DatabaseNode,
     king: KingNode,
 
@@ -111,6 +111,9 @@ const edgeTypes = {
 }
 
 const nodeDefaults = {
+    loop: {name:"Loop", description:"Iteración simulada"},
+    deferred: {name:"Deferred", description:"Espera configurable"},
+    "best-of-two": {name:"Best of Two", description:"Comparación simulada"},
     db: { name: "Database", description: "Memoria simulada", operation: "write", key: "result", value: "" },
     king: { name: "King", description: "Orquestación simulada", objective: "Evaluar resultados", decision: "approve" },
 
@@ -403,11 +406,6 @@ const system = {
                                         ...edge, data: {...edge.data, routeState: event.active ? "taken" : "skipped", active: event.active, pulse: event.active ? Date.now() : undefined}
                                     } : edge))
                                 }
-                                if (event.type === "loop.iterated") {
-                                    // El cuerpo del bucle vuelve a ejecutarse: sus nodos quedan en espera.
-                                    const body = new Set(event.nodeIds)
-                                    setNodes(items => items.map(node => body.has(node.id) ? {...node, data: {...node.data, executionState: "waiting"}} : node))
-                                }
                                 if (event.type === "node.skipped") {
                                     setNodes(items => items.map(node => node.id === event.nodeId ? {...node, data: {...node.data, executionState: "skipped"}} : node))
                                 }
@@ -545,33 +543,17 @@ if (
 
                 if (!isValidConnection(connection)) return
                 setEdges(
-                    currentEdges => {
-                        // Si la conexión cierra un ciclo, se crea como retroalimentación (bucle acotado).
-                        const closesCycle = wouldCreateCycle(
-                            currentEdges.map(e => ({
-                                sourceNodeId: e.source,
-                                targetNodeId: e.target,
-                                feedback: (e.data as { feedback?: FeedbackConfig } | undefined)?.feedback
-                            })),
-                            connection.source,
-                            connection.target
-                        )
-                        return addEdge(
+                    currentEdges =>
+                        addEdge(
                             {
                                 ...connection,
 
                                 type:
-                                   "execution",
-
-                                data:
-                                    closesCycle
-                                        ? { feedback: DEFAULT_FEEDBACK }
-                                        : undefined
+                                   "execution"
                             },
 
                             currentEdges
                         )
-                    }
                 )
 
             },

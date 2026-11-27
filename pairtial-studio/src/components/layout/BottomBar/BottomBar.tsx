@@ -514,15 +514,6 @@ function getEventMessage(
         case "envelope.created":
             return `Envelope ${event.envelope.id} generado`
 
-        case "node.retrying":
-            return `Reintento ${event.attempt}/${event.maxAttempts - 1} de ${event.nodeId} en ${event.delayMs} ms: ${event.error}`
-
-        case "loop.iterated":
-            return `Bucle ${event.edgeId}: iteración ${event.iteration}/${event.maxIterations}`
-
-        case "loop.exhausted":
-            return `Bucle ${event.edgeId}: sin convergencia tras ${event.maxIterations} iteraciones (${event.onExhausted === "fail" ? "falla" : "continúa"})`
-
         default:
             return "Evento desconocido"
     }
