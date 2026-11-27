@@ -4,13 +4,13 @@ export class DecisionManager {
  private pending = new Map<string,{request:DecisionRequest; resolve:(r:DecisionResponse)=>void}>()
  constructor(private changed:(requests:DecisionRequest[])=>void = ()=>{}) {}
  list(){return [...this.pending.values()].map(x=>x.request)}
- request(data: Omit<DecisionRequest,'id'|'createdAt'>, signal:AbortSignal):Promise<DecisionResponse>{
+ request(data: Omit<DecisionRequest,'id'|'createdAt'>, signal:AbortSignal, existing?:DecisionRequest, beforeResolve?:(response:DecisionResponse)=>void):Promise<DecisionResponse>{
   signal.throwIfAborted()
-  const request={...data,id:crypto.randomUUID(),createdAt:Date.now()}
+  const request=existing??{...data,id:crypto.randomUUID(),createdAt:Date.now()}
   return new Promise((resolve,reject)=>{
    const cleanup=()=>{signal.removeEventListener('abort',abort);this.pending.delete(request.id);this.changed(this.list())}
    const abort=()=>{cleanup();reject(signal.reason??new DOMException('Cancelled','AbortError'))}
-   this.pending.set(request.id,{request,resolve:r=>{cleanup();resolve(r)}})
+   this.pending.set(request.id,{request,resolve:r=>{beforeResolve?.(r);cleanup();resolve(r)}})
    signal.addEventListener('abort',abort,{once:true});this.changed(this.list())
   })
  }

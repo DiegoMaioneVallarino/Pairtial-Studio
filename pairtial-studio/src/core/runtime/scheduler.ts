@@ -7,13 +7,15 @@ export async function scheduleNodes(
     maxConcurrency: number,
     signal: AbortSignal,
     abortPeers: () => void,
-    execute: (node: PairtialNode, suspend: <T>(promise: Promise<T>) => Promise<T>) => Promise<void>
+    execute: (node: PairtialNode, suspend: <T>(promise: Promise<T>) => Promise<T>) => Promise<void>,
+    alreadySettled: readonly string[] = []
 ): Promise<void> {
     if (!Number.isInteger(maxConcurrency) || maxConcurrency < 1 || maxConcurrency > 64) {
         throw new Error("maxConcurrency must be an integer between 1 and 64")
     }
     const pending = new Map(plan.map(node => [node.id, node]))
-    const settled = new Set<string>()
+    const settled = new Set<string>(alreadySettled)
+    for(const id of alreadySettled) pending.delete(id)
     const running = new Map<string, Promise<void>>()
     const dependencies = new Map(plan.map(node => [node.id, new Set<string>()]))
     for (const edge of system.edges) dependencies.get(edge.targetNodeId)?.add(edge.sourceNodeId)

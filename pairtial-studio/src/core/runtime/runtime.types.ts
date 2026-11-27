@@ -94,6 +94,8 @@ export type RuntimeEventListener = (
 
 
 export type RuntimeOptions = {
+    checkpoint?: import("../storage/runJournal").Checkpoint
+    onCheckpoint?: (checkpoint:import("../storage/runJournal").Checkpoint)=>void
     onEvent?: RuntimeEventListener
     signal?: AbortSignal
     maxConcurrency?: number

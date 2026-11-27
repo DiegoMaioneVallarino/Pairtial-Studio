@@ -36,9 +36,12 @@ export async function runSystem(
     options: RuntimeOptions = {}
 ): Promise<RuntimeResult> {
 
-    const runId = crypto.randomUUID()
+    const restored = options.checkpoint
+    if(restored && (restored.status!=="running" || restored.system.id!==system.id)) throw new Error("Invalid checkpoint")
+    if(restored) system=structuredClone(restored.system)
+    const runId = restored?.runId ?? crypto.randomUUID()
     const ancestry = [...(options.ancestry ?? []), system.id]
-    const fabrics = options.ancestry ? options.fabrics ?? [] : structuredClone(options.fabrics ?? [])
+    const fabrics = options.ancestry ? options.fabrics ?? [] : structuredClone(restored?.fabrics ?? options.fabrics ?? [])
 
     const controller = new AbortController()
     const signal = controller.signal
@@ -49,13 +52,25 @@ export async function runSystem(
     const tools = options.tools ?? createToolRegistry()
     const toolPermissions = options.toolPermissions ?? ["mock.execute"]
     const artifacts = options.artifacts ?? new ArtifactRegistry()
-    const mockDatabase = new Map<string, unknown>()
-    const events: RuntimeEvent[] = []
-    const envelopes: Envelope[] = []
+    if(restored) artifacts.restore(restored.artifacts)
+    const mockDatabase = new Map<string, unknown>(restored?.database)
+    const events: RuntimeEvent[] = structuredClone(restored?.events ?? [])
+    const envelopes: Envelope[] = structuredClone(restored?.envelopes ?? [])
     const nodeStates: NodeExecutionStates = {}
+    const pending = structuredClone(restored?.pending ?? {})
+    const responses = structuredClone(restored?.responses ?? {})
+    const settled = system.nodes.filter(n=>restored?.nodeStates[n.id]==="success"||restored?.nodeStates[n.id]==="skipped").map(n=>n.id)
+    const concurrency=restored?.maxConcurrency ?? options.maxConcurrency ?? 4
+    function checkpoint(status:import("../storage/runJournal").Checkpoint["status"]="running") {
+        options.onCheckpoint?.(structuredClone({runId,system,fabrics,maxConcurrency:concurrency,database:[...mockDatabase],pending,responses,artifacts:artifacts.list(),status,updatedAt:Date.now(),success:status==="completed",events,envelopes,nodeStates}))
+    }
 
     function emit(event: RuntimeEvent) {
         events.push(event)
+        if(event.type==="node.completed"||event.type==="node.skipped"||event.type==="run.started") checkpoint()
+        if(event.type==="run.completed") checkpoint("completed")
+        if(event.type==="run.failed") checkpoint("failed")
+        if(event.type==="run.cancelled") checkpoint("cancelled")
         options.onEvent?.(event)
     }
 
@@ -127,10 +142,10 @@ export async function runSystem(
     // Inicializar estados.
 
     for (const node of system.nodes) {
-        nodeStates[node.id] = "waiting"
+        nodeStates[node.id] = settled.includes(node.id) ? restored!.nodeStates[node.id] : "waiting"
     }
 
-    emit({
+    if(!restored) emit({
         type: "run.started",
         runId,
         timestamp: Date.now()
@@ -160,7 +175,7 @@ export async function runSystem(
 
         // Ejecutar cada nodo.
 
-        await scheduleNodes(system, executionPlan, options.maxConcurrency ?? 4, signal,
+        await scheduleNodes(system, executionPlan, concurrency, signal,
             () => controller.abort(), async (node, suspend) => {
 
             signal.throwIfAborted()
@@ -243,7 +258,10 @@ export async function runSystem(
                                 if (request.mode === "selection" && !request.choices.length) throw new Error("Selection requires choices")
                                 nodeStates[node.id] = "awaiting-human"
                                 emit({type:"decision.requested",runId,nodeId:node.id,timestamp:Date.now()})
-                                const response = await suspend(options.decisions.request(request,signal))
+                                const existing = pending[node.id] ?? {...request,id:crypto.randomUUID(),createdAt:Date.now()}
+                                pending[node.id]=existing
+                                checkpoint()
+                                const response = responses[node.id] ?? await suspend(options.decisions.request(request,signal,existing,r=>{responses[node.id]=r;checkpoint()}))
                                 nodeStates[node.id] = "running"
                                 emit({type:"decision.responded",runId,nodeId:node.id,timestamp:Date.now()})
                                 return response
@@ -286,6 +304,8 @@ export async function runSystem(
                 })
 
                 nodeStates[node.id] = "success"
+                delete pending[node.id]
+                delete responses[node.id]
 
                 emit({
                     type: "node.completed",
@@ -318,7 +338,7 @@ export async function runSystem(
 
                 throw error
             }
-        })
+        }, settled)
 
         signal.throwIfAborted()
 

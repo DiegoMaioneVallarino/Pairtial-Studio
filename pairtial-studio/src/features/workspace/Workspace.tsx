@@ -1,3 +1,4 @@
+import { RunJournal, type Checkpoint } from "../../core/storage/runJournal"
 import { ArtifactRegistry, type Artifact } from "../../core/artifacts/artifactRegistry"
 import { DecisionManager, type DecisionRequest } from "../../core/decisions/decisionManager"
 import DecisionInbox from "./DecisionInbox"
@@ -164,8 +165,12 @@ function Workspace({
     onRunningChange
 }: WorkspaceProps) {
 
-    const [artifactRecords,setArtifactRecords] = useState<Artifact[]>([])
-    const [artifactRegistry] = useState(() => new ArtifactRegistry(setArtifactRecords))
+    const [journal] = useState(() => new RunJournal(localStorage))
+    const [storageError,setStorageError] = useState("")
+    const [history,setHistory] = useState<Checkpoint[]>(() => {try{return journal.list()}catch{return []}})
+    const [resumeRequest,setResumeRequest] = useState<Checkpoint|null>(null)
+    const [artifactRecords,setArtifactRecords] = useState<Artifact[]>(() => {const map=new Map<string,Artifact>(); for(const run of [...history].reverse()) for(const a of run.artifacts) map.set(`${a.id}:${a.version}`,a);return [...map.values()]})
+    const [artifactRegistry] = useState(() => new ArtifactRegistry(setArtifactRecords,artifactRecords))
     const [requests,setRequests] = useState<DecisionRequest[]>([])
     const [decisions] = useState(() => new DecisionManager(setRequests))
     const controllerRef = useRef<AbortController | null>(null)
@@ -232,7 +237,7 @@ function Workspace({
     useEffect(() => {
 
     controllerRef.current?.abort()
-    setRuntimeEvents([])
+    setRuntimeEvents(history.find(r=>r.system.id===activeSystemId)?.events ?? [])
     loadingSystemRef.current =
         true
 
@@ -338,13 +343,15 @@ useEffect(() => {
     useEffect(() => {
 
         if (
-            executionRequest === 0 || executionRequest === lastRequest.current || controllerRef.current !== null
+            (!resumeRequest && (executionRequest === 0 || executionRequest === lastRequest.current)) || controllerRef.current !== null
         ) {
             return
         }
 
 
         lastRequest.current = executionRequest
+        const restoring = resumeRequest
+        setResumeRequest(null)
         async function execute() {
             const controller = new AbortController()
             controllerRef.current = controller
@@ -391,13 +398,18 @@ const system = {
                 )
 
 
-                setRuntimeEvents([])
-
+                setRuntimeEvents(restoring?.events ?? [])
+                if(restoring) setNodes(items=>items.map(n=>({...n,data:{...n.data,executionState:restoring.nodeStates[n.id]??"idle"}})))
 
                 const result =
                     await runSystem(
                         system,
                         {
+                            checkpoint: restoring ?? undefined,
+                            onCheckpoint: cp => {
+                                try {journal.save(cp);setHistory(journal.list());setStorageError("")}
+                                catch(error){setStorageError(`No se pudo guardar: ${String(error)}`);controller.abort()}
+                            },
                             signal: controller.signal,
                             maxConcurrency,
                             decisions,
@@ -538,7 +550,7 @@ if (
 
 
     }, [
-        executionRequest
+        executionRequest, resumeRequest
     ])
 
 
@@ -737,6 +749,15 @@ if (
     return (
         <div id="WorkspaceArea">
             <DecisionInbox requests={requests} manager={decisions}/>
+            <details style={{position:"absolute",top:12,left:12,zIndex:20,background:"#222",color:"white",padding:8,maxWidth:320}}>
+                <summary>Runtime history ({history.length})</summary>
+                {storageError && <p role="alert">{storageError}</p>}
+                {history.filter(r=>r.system.id===activeSystemId).map(r=><div key={r.runId} style={{padding:6}}>
+                    <small>{new Date(r.updatedAt).toLocaleString()} · {r.status === "running" && !controllerRef.current ? "interrupted" : r.status}</small>
+                    <button disabled={!!controllerRef.current} onClick={()=>{setRuntimeEvents(r.events);setNodes(items=>items.map(n=>({...n,data:{...n.data,executionState:r.nodeStates[n.id]??"idle"}})))}}>Inspect</button>
+                    {r.status==="running" && <button disabled={!!controllerRef.current} onClick={()=>setResumeRequest(r)}>Resume</button>}
+                </div>)}
+            </details>
 
             <div id="Workspace">
 

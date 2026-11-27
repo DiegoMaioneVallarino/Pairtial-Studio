@@ -4,7 +4,8 @@ export type Artifact = ArtifactReference & { content:string; encoding:'utf8'|'ba
 export type ArtifactInput = Omit<Artifact,'id'|'version'|'createdAt'|'size'> & { id?:string }
 export class ArtifactRegistry {
  private records: Artifact[] = []
- constructor(private changed?: (records:Artifact[])=>void) {}
+ constructor(private changed?: (records:Artifact[])=>void, initial:Artifact[] = []) { this.records=structuredClone(initial) }
+ restore(records:Artifact[]){ for(const record of records) if(!this.get(record.id,record.version)) this.records.push(structuredClone(record)); this.changed?.(this.list()) }
  list():Artifact[] { return structuredClone(this.records) }
  get(id:string,version?:number):Artifact|undefined { const record=this.records.filter(a=>a.id===id && (version===undefined||a.version===version)).at(-1); return record && structuredClone(record) }
  publish(input:ArtifactInput):ArtifactReference {
