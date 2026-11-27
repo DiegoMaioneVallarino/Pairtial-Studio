@@ -10,6 +10,7 @@ import type {
 
 
 export type RuntimeEvent =
+    | {type:"tool.started"|"tool.completed"|"tool.failed";runId:string;nodeId:string;timestamp:number;toolId:string;error?:string}
     | {type:"decision.requested"|"decision.responded";runId:string;nodeId:string;timestamp:number}
     | { type: "node.skipped"; runId: string; nodeId: string; timestamp: number; reason: string }
     | { type: "edge.routed"; runId: string; nodeId: string; edgeId: string; timestamp: number; active: boolean }
@@ -100,5 +101,7 @@ export type RuntimeOptions = {
     ancestry?: string[]
     decisions?: import("../decisions/decisionManager").DecisionManager
     artifacts?: import("../artifacts/artifactRegistry").ArtifactRegistry
+    tools?: import("../tools/toolRegistry").ToolRegistry
+    toolPermissions?: readonly string[]
     initialInputs?: Envelope[]
 }

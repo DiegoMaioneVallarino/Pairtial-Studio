@@ -1,3 +1,4 @@
+import { createToolRegistry } from "../tools/toolRegistry"
 import { ArtifactRegistry, artifactDependencies } from "../artifacts/artifactRegistry"
 import { scheduleNodes } from "./scheduler"
 import { conditionalPort } from "./decisionEngine"
@@ -45,6 +46,8 @@ export async function runSystem(
     options.signal?.addEventListener("abort", forwardAbort, { once: true })
     if (options.signal?.aborted) forwardAbort()
 
+    const tools = options.tools ?? createToolRegistry()
+    const toolPermissions = options.toolPermissions ?? ["mock.execute"]
     const artifacts = options.artifacts ?? new ArtifactRegistry()
     const mockDatabase = new Map<string, unknown>()
     const events: RuntimeEvent[] = []
@@ -223,6 +226,17 @@ export async function runSystem(
                             system,
                             signal,
                             mockDatabase,
+                            invokeTool: async (toolId,args) => {
+                                emit({type:"tool.started",runId,nodeId:node.id,toolId,timestamp:Date.now()})
+                                try {
+                                    const result=await tools.invoke(toolId,args,signal,toolPermissions)
+                                    emit({type:"tool.completed",runId,nodeId:node.id,toolId,timestamp:Date.now()})
+                                    return result
+                                } catch(error) {
+                                    emit({type:"tool.failed",runId,nodeId:node.id,toolId,timestamp:Date.now(),error:String(error)})
+                                    throw error
+                                }
+                            },
                             artifacts,
                             requestDecision: async request => {
                                 if (!options.decisions) throw new Error("Human node requires a DecisionManager")
@@ -239,7 +253,7 @@ export async function runSystem(
                                 if (ancestry.length >= 8) throw new Error("Fabric nesting limit reached")
                                 const child = fabrics.find(f => f.id === id)
                                 if (!child) throw new Error(`Fabric not found: ${id}`)
-                                const result = await runSystem(child, {signal, maxConcurrency: 1, fabrics, ancestry, initialInputs: inputs, artifacts, decisions: options.decisions})
+                                const result = await runSystem(child, {signal, maxConcurrency: 1, fabrics, ancestry, initialInputs: inputs, tools, toolPermissions, artifacts, decisions: options.decisions})
                                 return {...result, envelopes: result.envelopes.filter(e => !child.edges.some(edge => edge.sourceNodeId === e.sourceNodeId))}
                             }
                         }

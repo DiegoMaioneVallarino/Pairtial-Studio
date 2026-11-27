@@ -10,9 +10,14 @@ import type {
 export const apiExecutor: NodeExecutor =
     async ({
         node,
-        inputs
+        inputs, context
     }) => {
 
+        if (node.config.toolId) {
+            const toolId=String(node.config.toolId)
+            const result=await context.invokeTool(toolId,JSON.parse(String(node.config.toolArgs)))
+            return createEnvelope({sourceNodeId:node.id,payload:{type:"tool",toolId,result}})
+        }
         const startedAt =
             performance.now()
 

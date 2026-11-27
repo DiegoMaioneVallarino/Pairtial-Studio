@@ -1,3 +1,4 @@
+import { ToolsPanel } from "./ToolsPanel"
 import { ArtifactsPanel } from "./ArtifactsPanel"
 import type { Artifact } from "../../../core/artifacts/artifactRegistry"
 import "./RightPanel.css"
@@ -35,6 +36,7 @@ type RightPanelTab =
     | "properties"
     | "execution"
     | "artifacts"
+    | "tools"
 
 type RightPanelProps = {
     artifacts: Artifact[]
@@ -171,10 +173,12 @@ export function RightPanel({
                             </span>
                         </button>
                         <button className={`right-panelIn-btn ${currentPanel === "artifacts" ? "selected" : ""}`} onClick={()=>setCurrentPanel("artifacts")}>Artifacts</button>
+                        <button className={`right-panelIn-btn ${currentPanel === "tools" ? "selected" : ""}`} onClick={()=>setCurrentPanel("tools")}>Tools</button>
                         </div>
 
 
                         <div className="right-panel-content">
+                            {currentPanel === "tools" && <ToolsPanel/>}
                             {currentPanel === "artifacts" && <ArtifactsPanel artifacts={artifacts}/>}
                             {currentPanel === "execution" && <ExecutionPanel node={selectedNode} events={runtimeEvents}/>}
 

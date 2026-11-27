@@ -9,6 +9,7 @@ import type {
 
 
 export type ExecutorContext = {
+    invokeTool: (id:string,args:unknown)=>Promise<Record<string,unknown>>
     runId: string
     system: PairtialSystem
     signal: AbortSignal
